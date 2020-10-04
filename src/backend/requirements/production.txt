@@ -1,0 +1,4 @@
+-r common.txt
+sentry-sdk==0.18.0 #https://docs.sentry.io/platforms/python/
+django-redis==4.12.1  #https://github.com/jazzband/django-redis
+redis==3.5.3 #https://redis.io/topics/quickstart
