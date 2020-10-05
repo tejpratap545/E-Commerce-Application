@@ -17,3 +17,7 @@ celery==5.0.0 #https://docs.celeryproject.org/en/latest/django/first-steps-with-
 django-celery-beat==2.0.0
 
 channels-rabbitmq==1.2.1 #https://pypi.org/project/channels-rabbitmq/
+
+django-debug-toolbar~=3.1.1
+channels~=2.4.0
+zxcvbn~=4.4.28

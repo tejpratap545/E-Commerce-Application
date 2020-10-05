@@ -5,6 +5,7 @@ from pathlib import Path
 
 import environ
 
+
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # django_docker_pycharm/
 APPS_DIR = ROOT_DIR / "backend"
@@ -59,25 +60,21 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.admin",
-
 ]
 THIRD_PARTY_APPS = [
-    'storages',
+    "storages",
     "django_celery_beat",
     "rest_framework",
     "corsheaders",
-    'channels',
-
-    'oauth2_provider',
-    'social_django',
-    'rest_framework_social_oauth2',
-
-    'drf_yasg',
+    "channels",
+    "oauth2_provider",
+    "social_django",
+    "rest_framework_social_oauth2",
+    "drf_yasg",
 ]
 
 LOCAL_APPS = [
     "backend.users.apps.UsersConfig",
-
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -87,30 +84,27 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    'rest_framework_social_oauth2.backends.DjangoOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-    'social_core.backends.facebook.FacebookAppOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
-    'social_core.backends.google.GoogleOAuth2',
-
+    "rest_framework_social_oauth2.backends.DjangoOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+    "social_core.backends.facebook.FacebookAppOAuth2",
+    "social_core.backends.facebook.FacebookOAuth2",
+    "social_core.backends.google.GoogleOAuth2",
 ]
 
 # Facebook configuration
-SOCIAL_AUTH_FACEBOOK_KEY = env('SOCIAL_AUTH_FACEBOOK_KEY', default="")
-SOCIAL_AUTH_FACEBOOK_SECRET = env('SOCIAL_AUTH_FACEBOOK_KEY', default="")
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-    'fields': 'id, name, email'
-}
+SOCIAL_AUTH_FACEBOOK_KEY = env("SOCIAL_AUTH_FACEBOOK_KEY", default="")
+SOCIAL_AUTH_FACEBOOK_SECRET = env("SOCIAL_AUTH_FACEBOOK_KEY", default="")
+SOCIAL_AUTH_FACEBOOK_SCOPE = ["email"]
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {"fields": "id, name, email"}
 
 # Google configuration
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', default="")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', default="")
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default="")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", default="")
 
 # Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
@@ -167,13 +161,13 @@ MEDIA_ROOT = str(APPS_DIR / "media")
 AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME")
 AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY")
 
-DEFAULT_FILE_STORAGE = 'backend.storage.AzureMediaStorage'
-STATICFILES_STORAGE = 'backend.storage.AzureStaticStorage'
+DEFAULT_FILE_STORAGE = "backend.utils.storage.AzureMediaStorage"
+STATICFILES_STORAGE = "backend.utils.storage.AzureStaticStorage"
 
-AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+AZURE_CUSTOM_DOMAIN = f"{AZURE_ACCOUNT_NAME}.blob.core.windows.net"
 
-STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
-MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/'
+STATIC_URL = f"https://{AZURE_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
+MEDIA_URL = f"https://{AZURE_CUSTOM_DOMAIN}/{MEDIA_LOCATION}/"
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -206,8 +200,8 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     }
@@ -255,7 +249,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
-                      "%(process)d %(thread)d %(message)s"
+            "%(process)d %(thread)d %(message)s"
         }
     },
     "handlers": {
@@ -268,16 +262,32 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
+
+# django-channel
+
+CHANNEL_LAYERS = {  # https://pypi.org/project/channels-rabbitmq/#Usage
+    "default": {
+        "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
+        "CONFIG": {
+            "host": env("REDIS_URL", default="amqp://guest:guest@127.0.0.1/asgi"),
+            # "ssl_context": ... (optional)
+        },
+    },
+}
+
+
 # -------------------------------------------------------------------------------
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        'rest_framework_social_oauth2.authentication.SocialAuthentication',
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework_social_oauth2.authentication.SocialAuthentication",
     ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated", ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
@@ -286,16 +296,4 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ],
-}
-
-# django-channel
-
-CHANNEL_LAYERS = {  # https://pypi.org/project/channels-rabbitmq/#Usage
-    "default": {
-        "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
-        "CONFIG": {
-            "host": env('REDIS_URL', default='amqp://guest:guest@127.0.0.1/asgi'),
-            # "ssl_context": ... (optional)
-        },
-    },
 }
