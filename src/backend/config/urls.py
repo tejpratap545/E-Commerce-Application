@@ -13,6 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from backend.users.views import (
+    check_contact_number,
+    check_email,
+    check_username,
+    JWTAuthorizationView,
+    SignUpUserView,
+    TokenView,
+    UserView,
+)
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
@@ -24,7 +33,6 @@ from rest_framework import permissions
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    url(r"^auth/", include("rest_framework_social_oauth2.urls")),
 ]
 
 
@@ -51,6 +59,24 @@ urlpatterns += [
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 ]
 
+
+# users authentication
+
+urlpatterns += [
+    # authentication and token generators views
+    path("auth/authorize", JWTAuthorizationView.as_view(), name="authorize"),
+    path("auth/token", TokenView.as_view(), name="generate jwt token"),
+    # path("auth/", include("rest_framework_social_oauth2.urls")),
+    path("user/signup", SignUpUserView.as_view(), name="user sign up "),
+    path("user/<int:id>", UserView.as_view()),
+    path("check/username", check_username, name="check username validity"),
+    path("check/email", check_email, name="check email validity"),
+    path(
+        "check/contactnumber",
+        check_contact_number,
+        name="check contact number  validity",
+    ),
+]
 if settings.DEBUG:
     import debug_toolbar
 

@@ -29,6 +29,7 @@
           <option value="type.with_ui" />
           <option value="users.urls.urlpatterns" />
           <option value="object._request" />
+          <option value="object.data" />
         </list>
       </option>
     </inspection_tool>
