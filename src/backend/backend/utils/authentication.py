@@ -1,161 +1,93 @@
-from django.conf import settings
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.auth import get_user_model
-from django.utils.encoding import smart_str
-import jwt
-from rest_framework import exceptions
+from backend.utils.backend import decode_jwt
+from django.urls import reverse
+from oauth2_provider.oauth2_backends import get_oauthlib_core
+from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
+from rest_framework_social_oauth2.settings import DRFSO2_URL_NAMESPACE
+from social_core.exceptions import MissingBackend
+from social_core.utils import requests
+from social_django.utils import load_backend, load_strategy
+from social_django.views import NAMESPACE
 
-from .backend import decode_jwt
 
-
-class JwtToken(dict):
+class SocialAuthentication(BaseAuthentication):
     """
-    Mimics the structure of `AbstractAccessToken` so you can use standard
-    Django Oauth Toolkit permissions like `TokenHasScope`.
-    """
-
-    def __init__(self, payload):
-        super(JwtToken, self).__init__(**payload)
-
-    def __getattr__(self, item):
-        return self[item]
-
-    def is_valid(self, scopes=None):
-        """
-        Checks if the access token is valid.
-        :param scopes: An iterable containing the scopes to check or None
-        """
-        return not self.is_expired() and self.allow_scopes(scopes)
-
-    def is_expired(self):
-        """
-        Check token expiration with timezone awareness
-        """
-        # Token expiration is already checked
-        return False
-
-    def allow_scopes(self, scopes):
-        """
-        Check if the token allows the provided scopes
-        :param scopes: An iterable containing the scopes to check
-        """
-        if not scopes:
-            return True
-
-        provided_scopes = set(self.scope.split())
-        resource_scopes = set(scopes)
-
-        return resource_scopes.issubset(provided_scopes)
-
-
-class JWTAuthentication(BaseAuthentication):
-    """
-    Token based authentication using the JSON Web Token standard.
+    Authentication backend using `python-social-auth`
     Clients should authenticate by passing the token key in the "Authorization"
-    HTTP header, prepended with the string specified in the setting
-    `JWT_AUTH_HEADER_PREFIX`. For example:
-        Authorization: JWT eyJhbGciOiAiSFMyNTYiLCAidHlwIj
+    HTTP header with the backend used, prepended with the string "Bearer ".
+    For example:
+        Authorization: Bearer facebook 401f7ac837da42b97f613d789819ff93537bee6a
     """
 
     www_authenticate_realm = "api"
 
     def authenticate(self, request):
         """
-        Returns a two-tuple of `User` and token if a valid signature has been
-        supplied using JWT-based authentication.  Otherwise returns `None`.
+        Returns two-tuple of (user, token) if authentication succeeds,
+        or None otherwise.
         """
-        jwt_value = self._get_jwt_value(request)
-        if jwt_value is None:
-            return None
+        auth_header = get_authorization_header(request).decode(HTTP_HEADER_ENCODING)
+        auth = auth_header.split()
 
-        try:
-            payload = decode_jwt(jwt_value)
-        except jwt.ExpiredSignatureError:
-            msg = "Signature has expired."
-            raise exceptions.AuthenticationFailed(msg)
-        except jwt.DecodeError:
-            msg = "Error decoding signature."
-            raise exceptions.AuthenticationFailed(msg)
-        except jwt.InvalidTokenError:
-            raise exceptions.AuthenticationFailed()
-
-        self._add_session_details(request, payload)
-
-        user = self.authenticate_credentials(payload)
-        return user, JwtToken(payload)
-
-    def authenticate_credentials(self, payload):
-        """
-        Returns an active user that matches the payload's user id and email.
-        """
-        if getattr(settings, "JWT_AUTH_DISABLED", False):
-            return AnonymousUser()
-
-        User = get_user_model()
-        username = payload.get(getattr(settings, "JWT_ID_ATTRIBUTE"))
-
-        if not username:
-            msg = "Invalid payload."
-            raise exceptions.AuthenticationFailed(msg)
-
-        try:
-            kwargs = {getattr(settings, "JWT_ID_ATTRIBUTE"): username}
-            user = User.objects.get(**kwargs)
-        except User.DoesNotExist:
-            msg = "Invalid signature."
-            raise exceptions.AuthenticationFailed(msg)
-
-        if not user.is_active:
-            msg = "User account is disabled."
-            raise exceptions.AuthenticationFailed(msg)
-
-        return user
-
-    def _get_jwt_value(self, request):
-        auth = get_authorization_header(request).split()
-        auth_header_prefix = getattr(settings, "JWT_AUTH_HEADER_PREFIX", "JWT")
-
-        if not auth:
-            if getattr(settings, "JWT_AUTH_COOKIE", None):
-                return request.COOKIES.get(settings.JWT_AUTH_COOKIE)
-            return None
-
-        if smart_str(auth[0]) != auth_header_prefix:
+        if not auth or auth[0].lower() != "bearer":
             return None
 
         if len(auth) == 1:
-            msg = "Invalid Authorization header. No credentials provided."
+            msg = "Invalid token header. No backend provided."
             raise exceptions.AuthenticationFailed(msg)
-        elif len(auth) > 2:
-            msg = (
-                "Invalid Authorization header. Credentials string "
-                "should not contain spaces."
-            )
+        elif len(auth) == 2:
+            msg = "Invalid token header. No credentials provided."
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(auth) > 3:
+            msg = "Invalid token header. Token string should not contain spaces."
             raise exceptions.AuthenticationFailed(msg)
 
-        jwt_value = auth[1]
-        if type(jwt_value) is bytes:
-            jwt_value = jwt_value.decode("utf-8")
-        return jwt_value
+        token = auth[2]
+        backend = auth[1]
+        if backend == "password":
+            oauthlib_core = get_oauthlib_core()
+            try:
+                request._request.META["HTTP_AUTHORIZATION"] = " ".join(
+                    ["Bearer", decode_jwt(token)]
+                )
+            except:
+                msg = "Invalid Token: Should provide valid JWT token "
+                raise exceptions.AuthenticationFailed(msg)
 
-    def _add_session_details(self, request, payload):
-        """
-        Adds to the session payload details so they can be used anytime.
-        """
+            valid, r = oauthlib_core.verify_request(request, scopes=[])
+            if valid:
+                return r.user, r.access_token
+            request.oauth2_error = getattr(r, "oauth2_error", {})
+            return None
+
+        strategy = load_strategy(request=request)
+
         try:
-            items = payload.iteritems()
-        except AttributeError:  # python 3.6
-            items = payload.items()
-        for k, v in items:
-            if k not in ("iat", "exp"):
-                request.session["jwt_{}".format(k)] = v
+            backend = load_backend(
+                strategy,
+                backend,
+                reverse(
+                    "%s:%s:complete" % (DRFSO2_URL_NAMESPACE, NAMESPACE),
+                    args=(backend,),
+                ),
+            )
+        except MissingBackend:
+            msg = "Invalid token header. Invalid backend."
+            raise exceptions.AuthenticationFailed(msg)
 
-    def authenticate_header(self, _request):
+        try:
+            user = backend.do_auth(access_token=token)
+        except requests.HTTPError as e:
+            msg = e.response.text
+            raise exceptions.AuthenticationFailed(msg)
+
+        if not user:
+            msg = "Bad credentials."
+            raise exceptions.AuthenticationFailed(msg)
+        return user, token
+
+    def authenticate_header(self, request):
         """
-        Return a string to be used as the value of the `WWW-Authenticate`
-        header in a `401 Unauthenticated` response, or `None` if the
-        authentication scheme should return `403 Permission Denied` responses.
+        Bearer is the only finalized type currently
         """
-        auth_header_prefix = getattr(settings, "JWT_AUTH_HEADER_PREFIX", "JWT")
-        return '{0} realm="{1}"'.format(auth_header_prefix, self.www_authenticate_realm)
+        return 'Bearer backend realm="%s"' % self.www_authenticate_realm

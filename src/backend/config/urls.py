@@ -16,8 +16,6 @@ Including another URLconf
 from backend.users.views import (
     check_contact_number,
     check_email,
-    check_username,
-    JWTAuthorizationView,
     SignUpUserView,
     TokenView,
     UserView,
@@ -56,7 +54,7 @@ urlpatterns += [
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",
     ),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path("", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 ]
 
 
@@ -64,12 +62,10 @@ urlpatterns += [
 
 urlpatterns += [
     # authentication and token generators views
-    path("auth/authorize", JWTAuthorizationView.as_view(), name="authorize"),
     path("auth/token", TokenView.as_view(), name="generate jwt token"),
-    # path("auth/", include("rest_framework_social_oauth2.urls")),
+    path("auth/", include("rest_framework_social_oauth2.urls")),
     path("user/signup", SignUpUserView.as_view(), name="user sign up "),
     path("user/<int:id>", UserView.as_view()),
-    path("check/username", check_username, name="check username validity"),
     path("check/email", check_email, name="check email validity"),
     path(
         "check/contactnumber",

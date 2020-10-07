@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from oauth2_provider.models import AbstractAccessToken, AbstractRefreshToken
 from oauth2_provider.settings import oauth2_settings
+from phonenumber_field.modelfields import PhoneNumberField
 from typing import Optional
 
 
@@ -44,14 +45,10 @@ class PasswordTooWeakError(Exception):
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.BigAutoField(primary_key=True, auto_created=True, unique=True)
 
-    email = models.EmailField(
-        _("Email Address"), max_length=30, blank=False, null=False, unique=True
-    )
-    contact_number = models.CharField(
-        _("Contact Number"), max_length=15, blank=False, null=False, unique=True
-    )
-    first_name = models.CharField(_("First Name"), max_length=50, blank=True, null=True)
-    last_name = models.CharField(_("Last Name"), max_length=50, blank=True, null=True)
+    email = models.EmailField(max_length=30, blank=False, null=False, unique=True)
+    contact_number = PhoneNumberField(blank=True, null=True)
+    first_name = models.CharField(max_length=50, blank=True, null=True)
+    last_name = models.CharField(max_length=50, blank=True, null=True)
     date_of_birth = models.DateField(null=True)
     avatar = models.ImageField(upload_to="user/avatar")
 
@@ -92,42 +89,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             raise PasswordTooWeakError
 
         super().set_password(password)
-
-
-class FakeAccessToken(models.Model):
-    pass
-
-
-class RefreshToken(AbstractRefreshToken):
-    token = models.TextField()
-    application = models.ForeignKey(
-        oauth2_settings.APPLICATION_MODEL,
-        on_delete=models.CASCADE,
-        related_name="oauth2_application_api_refresh_tokes",
-    )
-    access_token = models.OneToOneField(
-        settings.OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="refresh_token_apis",
-    )
-
-
-class AccessToken(AbstractAccessToken):
-    token = models.TextField()
-    application = models.ForeignKey(
-        oauth2_settings.APPLICATION_MODEL,
-        on_delete=models.CASCADE,
-        related_name="oauth2_application_api_access_tokes",
-    )
-    source_refresh_token = models.OneToOneField(
-        RefreshToken,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="access_token_apis",
-    )
 
 
 # class Customer(models.Model):
