@@ -36,11 +36,6 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 
-# DATABASES
-# ------------------------------------------------------------------------------
-# https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL")}
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 # URLS
 # ------------------------------------------------------------------------------
@@ -233,8 +228,8 @@ MEDIA_ROOT = str(APPS_DIR / "media")
 
 # azure storage
 
-AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME")
-AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY")
+AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME", default="")
+AZURE_ACCOUNT_KEY = env("AZURE_ACCOUNT_KEY", default="")
 
 DEFAULT_FILE_STORAGE = "backend.utils.storage.AzureMediaStorage"
 STATICFILES_STORAGE = "backend.utils.storage.AzureStaticStorage"

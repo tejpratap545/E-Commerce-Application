@@ -42,6 +42,6 @@ class UserManager(BaseUserManager):
 
     def create_seller_user(self, email, contact_number, password=None):
         user = self.create_user(email, contact_number, password)
-        user.is_customer = True
+        user.is_seller = True
         user.save(using=self._db)
         return user
