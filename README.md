@@ -21,5 +21,5 @@ for Professional Developers
 
 1. [Git](https://git-scm.com/)
 2. [Docker](https://www.docker.com/)
-3. [kubernetes](https://kubernetes.io/)
+3. [Kubernetes](https://kubernetes.io/)
 4. [Azure](https://azure.microsoft.com/en-in/)
