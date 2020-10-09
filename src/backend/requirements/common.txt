@@ -26,3 +26,9 @@ channels-rabbitmq==1.2.1 #https://pypi.org/project/channels-rabbitmq/
 channels~=2.4.0
 zxcvbn~=4.4.28
 django-phonenumber-field==5.0.0 #https://github.com/stefanfoulis/django-phonenumber-field
+
+
+artifacts-keyring==0.2.10
+distro==1.5.0
+dotnetcore2==2.1.17
+keyring==21.4.0
