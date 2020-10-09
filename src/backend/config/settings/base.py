@@ -36,7 +36,6 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 
-
 # URLS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
@@ -66,6 +65,8 @@ THIRD_PARTY_APPS = [
     "social_django",
     "rest_framework_social_oauth2",
     "drf_yasg",
+    "djmoney",
+    "djmoney.contrib.exchange",
 ]
 
 LOCAL_APPS = [
@@ -333,19 +334,17 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
-
 # django-channel
 
 CHANNEL_LAYERS = {  # https://pypi.org/project/channels-rabbitmq/#Usage
     "default": {
         "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
         "CONFIG": {
-            "host": env("REDIS_URL", default="amqp://guest:guest@127.0.0.1/asgi"),
+            "host": env("RABBITMQ_URL", default="amqp://guest:guest@127.0.0.1/asgi"),
             # "ssl_context": ... (optional)
         },
     },
 }
-
 
 # -------------------------------------------------------------------------------
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
@@ -368,3 +367,41 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.MultiPartParser",
     ],
 }
+
+# django money
+# https://github.com/django-money/django-money#adding-a-new-currency
+
+from decimal import ROUND_HALF_EVEN
+from moneyed.localization import _FORMATTER
+
+import moneyed
+
+
+RS = moneyed.add_currency(
+    code="INR",
+    numeric="068",
+    name="Indian Rupee",
+    countries=("India",),
+)
+
+# Currency Formatter will output 2.000,00 Rs.
+_FORMATTER.add_sign_definition("default", RS, prefix="Rs. ")
+
+_FORMATTER.add_formatting_definition(
+    "en_IN",
+    group_size=3,
+    group_separator=".",
+    decimal_point=",",
+    positive_sign="",
+    trailing_positive_sign="",
+    negative_sign="-",
+    trailing_negative_sign="",
+    rounding_method=ROUND_HALF_EVEN,
+)
+
+CURRENCIES = ("USD", "EUR", "INR")
+CURRENCY_CHOICES = [("USD", "USD $"), ("EUR", "EUR €"), ("INR", "INR ₹")]
+
+# EXCHANGE_BACKEND = "djmoney.contrib.exchange.backends.FixerBackend"
+OPEN_EXCHANGE_RATES_APP_ID = env("OPEN_EXCHANGE_RATES_APP_ID", default="")
+OPEN_EXCHANGE_RATES_URL = "https://openexchangerates.org/api/historical/2017-01-01.json?symbols=EUR,NOK,SEK,CZK,INR"
