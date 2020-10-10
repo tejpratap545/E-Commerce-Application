@@ -1,4 +1,5 @@
 from .manager import UserManager
+from backend.utils.fileds import CardExpiryField, CardNumberField, SecurityCodeField
 from django.conf import settings
 from django.contrib.auth.models import _user_has_module_perms as user_has_module_perms
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
@@ -13,8 +14,8 @@ from typing import Optional
 
 class AbstractAddress(models.Model):
     room = models.IntegerField(blank=True, null=True)
-    address1 = models.CharField(max_length=300, blank=False, null=False)
-    address2 = models.CharField(max_length=300, blank=True, null=True)
+    address1 = models.TextField(blank=False, null=False)
+    address2 = models.TextField(blank=True, null=True)
     city = models.CharField(max_length=50, blank=False, null=False)
     state = models.CharField(max_length=50, blank=False, null=False)
     country = CountryField(max_length=50, blank=False, null=False)
@@ -28,12 +29,20 @@ class AbstractAddress(models.Model):
 
 
 class ShippingAddress(AbstractAddress):
+    extra_information = models.TextField(blank=True, null=True)
+
     def __str__(self):
         return self.postal_code
 
 
 class BillingAddress(AbstractAddress):
-    pass
+
+    card_number = CardNumberField()
+    card_expiry = CardNumberField()
+    security_field = SecurityCodeField()
+
+    def __str__(self):
+        return self.card_number
 
 
 class PasswordTooWeakError(Exception):
@@ -91,5 +100,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Customer(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    default_shipping_address = models.PositiveSmallIntegerField(default=0)
+    default_purchasing_address = models.PositiveSmallIntegerField(default=0)
     shipping_address = models.ManyToManyField(ShippingAddress)
     billing_address = models.ManyToManyField(BillingAddress)
