@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+from celery.schedules import crontab
 from pathlib import Path
 
 import environ
@@ -405,3 +406,13 @@ CURRENCY_CHOICES = [("USD", "USD $"), ("EUR", "EUR €"), ("INR", "INR ₹")]
 # EXCHANGE_BACKEND = "djmoney.contrib.exchange.backends.FixerBackend"
 OPEN_EXCHANGE_RATES_APP_ID = env("OPEN_EXCHANGE_RATES_APP_ID", default="")
 OPEN_EXCHANGE_RATES_URL = "https://openexchangerates.org/api/historical/2017-01-01.json?symbols=EUR,NOK,SEK,CZK,INR"
+
+
+# django celery periodic task
+CELERYBEAT_SCHEDULE = {
+    "update_rates": {
+        "task": "backend.products.task.update_rates",
+        "schedule": crontab(minute=0, hour=0),
+        "kwargs": {},  # For custom arguments
+    }
+}

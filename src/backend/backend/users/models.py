@@ -4,6 +4,7 @@ from django.contrib.auth.models import _user_has_module_perms as user_has_module
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django_countries.fields import CountryField
 from oauth2_provider.models import AbstractAccessToken, AbstractRefreshToken
 from oauth2_provider.settings import oauth2_settings
 from phonenumber_field.modelfields import PhoneNumberField
@@ -11,31 +12,28 @@ from typing import Optional
 
 
 class AbstractAddress(models.Model):
+    room = models.IntegerField(blank=True, null=True)
+    address1 = models.CharField(max_length=300, blank=False, null=False)
+    address2 = models.CharField(max_length=300, blank=True, null=True)
     city = models.CharField(max_length=50, blank=False, null=False)
     state = models.CharField(max_length=50, blank=False, null=False)
-    country = models.CharField(max_length=50, blank=False, null=False)
+    country = CountryField(max_length=50, blank=False, null=False)
     postal_code = models.CharField(max_length=10, blank=False, null=False)
-    contact_number = models.CharField(max_length=20, blank=False, null=False)
+    contact_number = PhoneNumberField(blank=False, null=False)
+    fax = models.CharField(max_length=30, blank=True, null=True)
     email = models.EmailField(max_length=30, blank=True, null=True)
 
     class Meta:
         abstract = True
 
 
-#
-# class ShippingAddress(AbstractAddress):
-#     room = models.IntegerField(_("Room Number"), blank=True, null=True)
-#     address1 = models.CharField(
-#         _("Address first"), max_length=300, blank=False, null=False
-#     )
-#     address2 = models.CharField(max_length=300, blank=True, null=True)
-#
-#     def __str__(self):
-#         return self.postal_code
-#
-#
-# class BillingAddress(AbstractAddress):
-#     pass
+class ShippingAddress(AbstractAddress):
+    def __str__(self):
+        return self.postal_code
+
+
+class BillingAddress(AbstractAddress):
+    pass
 
 
 class PasswordTooWeakError(Exception):
@@ -91,7 +89,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().set_password(password)
 
 
-# class Customer(models.Model):
-#     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-#     shipping_address = models.ManyToManyField(ShippingAddress)
-#     billing_address = models.ManyToManyField(BillingAddress)
+class Customer(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    shipping_address = models.ManyToManyField(ShippingAddress)
+    billing_address = models.ManyToManyField(BillingAddress)
