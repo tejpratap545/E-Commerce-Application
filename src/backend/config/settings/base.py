@@ -2,9 +2,12 @@
 Base settings to build other settings files upon.
 """
 from celery.schedules import crontab
+from decimal import ROUND_HALF_EVEN
+from moneyed.localization import _FORMATTER
 from pathlib import Path
 
 import environ
+import moneyed
 
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -372,11 +375,6 @@ REST_FRAMEWORK = {
 # django money
 # https://github.com/django-money/django-money#adding-a-new-currency
 
-from decimal import ROUND_HALF_EVEN
-from moneyed.localization import _FORMATTER
-
-import moneyed
-
 
 RS = moneyed.add_currency(
     code="INR",
@@ -407,12 +405,16 @@ CURRENCY_CHOICES = [("USD", "USD $"), ("EUR", "EUR €"), ("INR", "INR ₹")]
 OPEN_EXCHANGE_RATES_APP_ID = env("OPEN_EXCHANGE_RATES_APP_ID", default="")
 OPEN_EXCHANGE_RATES_URL = "https://openexchangerates.org/api/historical/2017-01-01.json?symbols=EUR,NOK,SEK,CZK,INR"
 
-
-# django celery periodic task
-CELERYBEAT_SCHEDULE = {
-    "update_rates": {
-        "task": "backend.products.task.update_rates",
-        "schedule": crontab(minute=0, hour=0),
-        "kwargs": {},  # For custom arguments
-    }
-}
+# Celery
+# ------------------------------------------------------------------------------
+# http://docs.celeryproject.org/en/latest/userguide/configuration
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default='amqp://guest:guest@localhost:5672//')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='db+sqlite:///results.db')
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_TIME_LIMIT = 5 * 60
+CELERY_TASK_SOFT_TIME_LIMIT = 60
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

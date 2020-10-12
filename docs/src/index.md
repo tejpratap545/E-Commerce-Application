@@ -1,7 +1,7 @@
 ---
 home: true
 heroImage: https://v1.vuepress.vuejs.org/hero.png
-tagline: E Commerce Application For JetBrains PyChamps Hackathon
+tagline: An E-commerce web application for JetBrains PyChamps Hackathon build with django,nuxt and vuepress
 actionText: Quick Start →
 actionLink: /guide/
 features:

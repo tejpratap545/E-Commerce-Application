@@ -42,7 +42,7 @@ class UserAuthTest(APITestCase):
     def test_user_auth(self):
         user = self.normal_user
         # user.is_active = False
-        # user.save()
+        # user.scd ..ave()
         #
         resp = self.client.post(
             self.get_token__url,
