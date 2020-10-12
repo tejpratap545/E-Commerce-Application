@@ -1,1 +1,4 @@
+# these requirements file is only for devlopement purpose for production purpose use the sec/backend location file
 -r src/backend/requirements/dev.txt
+-r src/backend/requirements/common.txt
+-r src/backend/requirements/production.txt
