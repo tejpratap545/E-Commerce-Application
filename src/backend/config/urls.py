@@ -48,7 +48,11 @@ schema_view = get_schema_view(
 )
 
 urlpatterns += [
-    # path('swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path(
+        "swagger(?P<format>\.json|\.yaml)$",
+        schema_view.without_ui(cache_timeout=0),
+        name="schema-json",
+    ),
     path(
         "swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
@@ -72,6 +76,7 @@ urlpatterns += [
         check_contact_number,
         name="check contact number  validity",
     ),
+    path("api/", include("config.api_routers")),
 ]
 if settings.DEBUG:
     import debug_toolbar
@@ -79,3 +84,21 @@ if settings.DEBUG:
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),
     ]
+
+
+from rest_framework.schemas import get_schema_view as drf_shema
+
+
+urlpatterns += [
+    # ...
+    # Use the `get_schema_view()` helper to add a `SchemaView` to project URLs.
+    #   * `title` and `description` parameters are passed to `SchemaGenerator`.
+    #   * Provide view name for use with `reverse()`.
+    path(
+        "openapi",
+        drf_shema(
+            title="Your Project", description="API for all things …", version="1.0.0"
+        ),
+        name="openapi-schema",
+    ),
+]

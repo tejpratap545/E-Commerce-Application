@@ -7,11 +7,11 @@
 #### If not install create docker-compose.yml  file anywhere with this content
 
     version: "3"
-    services: 
+    services:
       rabbitmq:
         image: rabbitmq:3-management-alpine
         container_name: rabbitmq
-        volumes: 
+        volumes:
           - rabbitmqmain:/etc/rabbitmq/
           - rabbitmqdata:/var/lib/rabbitmq/
           - rabbitmqlogs:/var/log/rabbitmq/
@@ -24,18 +24,18 @@
       postgrs:
         image: postgres
         container_name: postgres
-        volumes: 
+        volumes:
         - pgdata:/var/lib/postgresql/data
         environment:
           POSTGRES_PASSWORD: password
           POSTGRES_DB: dbname
           POSTGRES_USER: password
-        ports: 
+        ports:
         - 5432:5432
       redis:
         image: redis
         container_name: redis
-        volumes: 
+        volumes:
         - redisdata:/var/lib/redis
         ports:
         - 6379:6379
@@ -45,7 +45,7 @@
         ports:
           - 8025:8025
           - 1025:1025
-    volumes: 
+    volumes:
       rabbitmqmain:
       rabbitmqdata:
       rabbitmqlogs:
@@ -53,15 +53,15 @@
       redisdata:
 
 #### after then run
-  
-     docker-compose up -d 
+
+     docker-compose up -d
 
 ### 2. create a python virtual environment (recommended at project root and with the name of venv ) and activate it
-    
+
     cd ../..
     python3 -m venv venv
-    source venv/bin/activate   # for liux and mac users users 
-    source venv/Script/activate # for windoes users 
+    source venv/bin/activate   # for liux and mac users users
+    source venv/Script/activate # for windoes users
 
 ### 3. Install python requirements
 
@@ -71,37 +71,37 @@
 
     PYTHONUNBUFFERED=1
     DEBUG=True
-    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=  
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET= 
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=
     SOCIAL_AUTH_FACEBOOK_KEY=
     SOCIAL_AUTH_FACEBOOK_SECRET=
     DATABASE_URL=psql://username:password@127.0.0.1:5432/dname
     ALLOWD_HOSTS=['127.0.0.1','0.0.0.0','localhost]
-    AZURE_ACCOUNT_NAME= 
-    AZURE_ACCOUNT_KEY= 
-    SENDGRID_API_KEY=  
-    SENDGRID_USER_NAME= 
+    AZURE_ACCOUNT_NAME=
+    AZURE_ACCOUNT_KEY=
+    SENDGRID_API_KEY=
+    SENDGRID_USER_NAME=
     SENTRY_DSN=
     RABBITMQ_URL=amqp://username:password@127.0.0.1/asgi
     CELERY_BROKER_URL=amqp://username:password@localhost:5672//
     REDIS_URL=redis://127.0.0.1:6379/
-    STRIPE_PUBLISHABLE_KEY=  
-    STRIPE_SECRET_KEY=  
-    OPEN_EXCHANGE_RATES_APP_ID= 
+    STRIPE_PUBLISHABLE_KEY=
+    STRIPE_SECRET_KEY=
+    OPEN_EXCHANGE_RATES_APP_ID=
 
 ### 5. Start django server
 
     python manage.py makemigrations
     python manage.py migrate
     python manage.py shell_plus
-    python manage.py runserver_plus 
+    python manage.py runserver_plus
 
 ### 6. Start celery
 
-    celery -A config.celery beat -l INFO
-    celery -A config.celery worker -l INFO
-    celery -A config.celery events
-    celery flower --app=config.celery --basic_auth="username:password"
+    celery -A config.celery_app beat -l INFO
+    celery -A config.celery_app worker -l INFO
+    celery -A config.celery_app events
+    celery flower --app=config.celery_app --basic_auth="username:password"
 
 ### 7. To back up and Restore Database
 
