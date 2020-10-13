@@ -13,20 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from backend.users.views import (
-    check_contact_number,
-    check_email,
-    SignUpUserView,
-    TokenView,
-    UserView,
-)
+
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+from rest_framework.schemas import get_schema_view as drf_shema
 
 
 urlpatterns = [
@@ -66,17 +61,8 @@ urlpatterns += [
 
 urlpatterns += [
     # authentication and token generators views
-    path("auth/token", TokenView.as_view(), name="generate jwt token"),
-    path("auth/", include("rest_framework_social_oauth2.urls")),
-    path("user/signup", SignUpUserView.as_view(), name="user sign up "),
-    path("user/<int:id>", UserView.as_view()),
-    path("check/email", check_email, name="check email validity"),
-    path(
-        "check/contactnumber",
-        check_contact_number,
-        name="check contact number  validity",
-    ),
     path("api/", include("config.api_routers")),
+    path("api/", include("config.api_urls")),
 ]
 if settings.DEBUG:
     import debug_toolbar
@@ -84,10 +70,6 @@ if settings.DEBUG:
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),
     ]
-
-
-from rest_framework.schemas import get_schema_view as drf_shema
-
 
 urlpatterns += [
     # ...
@@ -97,7 +79,10 @@ urlpatterns += [
     path(
         "openapi",
         drf_shema(
-            title="Your Project", description="API for all things …", version="1.0.0"
+            title="E-commerce-Wen application api",
+            description="API for all things …",
+            url="http://127.0.0.1:8000",
+            version="1.0.0",
         ),
         name="openapi-schema",
     ),

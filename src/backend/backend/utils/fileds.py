@@ -1,8 +1,7 @@
-from .validators import CCNumberValidator, expiry_date, get_digits, CSCValidator
+from .validators import CCNumberValidator, CSCValidator, expiry_date, get_digits
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db import models
-from django.db.models import CharField
 from django.utils.translation import gettext_lazy as _
 
 import datetime
@@ -47,9 +46,7 @@ class CardExpiryField(models.DateField):
                 pass
 
         raise ValidationError(
-            self.error_messages["invalid"],
-            code="invalid",
-            params={"value": value},
+            self.error_messages["invalid"], code="invalid", params={"value": value},
         )
 
 

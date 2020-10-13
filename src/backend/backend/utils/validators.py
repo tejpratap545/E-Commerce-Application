@@ -47,7 +47,9 @@ def expiry_date(year, month):
     :type month: int
     :rtype: datetime.date
     """
-    weekday, day_count = calendar.monthrange(year, month)
+    weekday, day_count = calendar.monthrange(
+        year, month
+    )
     return datetime.date(year, month, day_count)
 
 

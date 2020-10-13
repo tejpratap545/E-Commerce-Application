@@ -1,13 +1,9 @@
 from .manager import UserManager
 from backend.utils.fileds import CardExpiryField, CardNumberField, SecurityCodeField
 from django.conf import settings
-from django.contrib.auth.models import _user_has_module_perms as user_has_module_perms
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
-from oauth2_provider.models import AbstractAccessToken, AbstractRefreshToken
-from oauth2_provider.settings import oauth2_settings
 from phonenumber_field.modelfields import PhoneNumberField
 from typing import Optional
 
@@ -38,7 +34,7 @@ class ShippingAddress(AbstractAddress):
 class BillingAddress(AbstractAddress):
 
     card_number = CardNumberField()
-    card_expiry = CardNumberField()
+    card_expiry = CardExpiryField()
     security_field = SecurityCodeField()
 
     def __str__(self):

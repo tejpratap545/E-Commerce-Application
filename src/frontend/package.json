@@ -19,7 +19,8 @@
     "@nuxtjs/sentry": "^4.3.5",
     "core-js": "^3.6.5",
     "nuxt": "^2.14.5",
-    "vue-stripe-checkout": "^3.5.11"
+    "vue-stripe-checkout": "^3.5.11",
+    "date-fns": "^2.16.1"
   },
   "devDependencies": {
     "@nuxt/types": "~2.14.0",

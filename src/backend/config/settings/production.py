@@ -1,4 +1,4 @@
-from .base import *  # noqa
+from .base import *  # noqa pylint: disable=unused-import,unused-wildcard-import,wildcard-import
 from .base import env
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -17,8 +17,8 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["example.com"])
 
 # DATABASES
 # ------------------------------------------------------------------------------
-DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
-DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
+DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405 pylint: disable-all
+DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405 pylint: disable-all
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
 
 # CACHES
@@ -39,9 +39,9 @@ CACHES = {
 # Email Service
 # https://sendgrid.com/docs/for-developers/sending-email/django/
 
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = env('SENDGRID_USER_NAME')
-EMAIL_HOST_PASSWORD = env('SENDGRID_API_KEY')
+EMAIL_HOST = "smtp.sendgrid.net"
+EMAIL_HOST_USER = env("SENDGRID_USER_NAME")
+EMAIL_HOST_PASSWORD = env("SENDGRID_API_KEY")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -57,7 +57,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
-                      "%(process)d %(thread)d %(message)s"
+            "%(process)d %(thread)d %(message)s"
         }
     },
     "handlers": {

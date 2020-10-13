@@ -1,7 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
-from celery.schedules import crontab
+
 from decimal import ROUND_HALF_EVEN
 from moneyed.localization import _FORMATTER
 from pathlib import Path
@@ -359,11 +359,10 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ],
-    "DEFAULT_PERMISSION_CLASSES": [
-
-    ],
+    "DEFAULT_PERMISSION_CLASSES": [],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
     ],
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
@@ -377,10 +376,7 @@ REST_FRAMEWORK = {
 
 
 RS = moneyed.add_currency(
-    code="INR",
-    numeric="068",
-    name="Indian Rupee",
-    countries=("India",),
+    code="INR", numeric="068", name="Indian Rupee", countries=("India",),
 )
 
 # Currency Formatter will output 2.000,00 Rs.
@@ -409,9 +405,11 @@ OPEN_EXCHANGE_RATES_URL = "https://openexchangerates.org/api/historical/2017-01-
 # ------------------------------------------------------------------------------
 # http://docs.celeryproject.org/en/latest/userguide/configuration
 CELERY_TIMEZONE = TIME_ZONE
-CELERY_BROKER_URL = env("CELERY_BROKER_URL", default='amqp://guest:guest@localhost:5672//')
-CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='db+sqlite:///results.db')
-CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_BROKER_URL = env(
+    "CELERY_BROKER_URL", default="amqp://guest:guest@localhost:5672//"
+)
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="db+sqlite:///results.db")
+CELERY_CACHE_BACKEND = "django-cache"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
