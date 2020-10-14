@@ -53,7 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50, blank=True, null=True)
     date_of_birth = models.DateField(null=True)
-    avatar = models.ImageField(upload_to="user/avatar")
+    avatar = models.ImageField(upload_to="user/avatar", blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)

@@ -8,7 +8,7 @@ from backend.products.models import (
 from rest_framework import serializers
 
 
-class FFilterCategorySerializer(serializers.ModelSerializer):
+class FilterCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterCategory
         fields = "__all__"

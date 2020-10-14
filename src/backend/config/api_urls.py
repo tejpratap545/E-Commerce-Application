@@ -1,4 +1,11 @@
-from backend.users.views import check_contact_number, check_email, SignUpUserView, TokenView, UserView
+from backend.users.api.views import (
+    check_contact_number,
+    check_email,
+    PasswordChangeView,
+    SignUpUserView,
+    UserView,
+)
+from backend.users.views import TokenView
 from django.urls.conf import include, path
 
 
@@ -12,5 +19,10 @@ urlpatterns = [
         "check/contactnumber",
         check_contact_number,
         name="check contact number  validity",
+    ),
+    path(
+        "auth/changepassword",
+        PasswordChangeView.as_view(),
+        name="change password of user ",
     ),
 ]

@@ -1,14 +1,7 @@
-
 from ..utils.backend import encode_token, decode_jwt
 from .models import User
-from .permissions import IsOwner
-from .serializers import UserSignupSerializer
 from django.conf import settings
 from django.db.models import Q
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework_social_oauth2.views import TokenView
 
@@ -17,59 +10,6 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-
-
-@api_view(["GET"])
-def check_contact_number(request):
-    contact_number = request.query_params["contact_number"]
-    if (
-        User.objects.only("contact_number")
-        .filter(contact_number=contact_number)
-        .exists()
-    ):
-        return Response(
-            data="User with this contact number is already exits",
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    return Response(data="This contact number is available", status=status.HTTP_200_OK)
-
-
-@api_view(["GET"])
-def check_email(request):
-    email = request.query_params["email"]
-    if User.objects.only("email").filter(email=email).exists():
-        return Response(
-            data="User with this email is already exits",
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    return Response(data="This email is available", status=status.HTTP_200_OK)
-
-
-class SignUpUserView(
-    CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericAPIView
-):
-    serializer_class = UserSignupSerializer
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request)
-
-
-class UserView(RetrieveModelMixin, UpdateModelMixin, GenericAPIView):
-    serializer_class = UserSignupSerializer
-    permission_classes = [IsOwner]
-    queryset = User.objects.all()
-    lookup_field = "id"
-
-    def get(self, request, id=None):
-        return self.retrieve(request, id)
-
-    def put(self, request, id=None, *args, **kwargs):
-        return self.update(request, id=id)
-
-    def patch(self, request, id=None):
-        return self.partial_update(request, id=id)
 
 
 class TokenView(TokenView):

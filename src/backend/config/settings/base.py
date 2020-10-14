@@ -368,6 +368,7 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.JSONParser",
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
+        "rest_framework.parsers.FileUploadParser",
     ],
 }
 
@@ -376,7 +377,10 @@ REST_FRAMEWORK = {
 
 
 RS = moneyed.add_currency(
-    code="INR", numeric="068", name="Indian Rupee", countries=("India",),
+    code="INR",
+    numeric="068",
+    name="Indian Rupee",
+    countries=("India",),
 )
 
 # Currency Formatter will output 2.000,00 Rs.

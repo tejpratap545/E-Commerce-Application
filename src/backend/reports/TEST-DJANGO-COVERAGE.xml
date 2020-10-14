@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="4" failures="0" skipped="0" tests="4" time="3.200" timestamp="2020-10-14T06:33:36.619071" hostname="Tejpratap"><testcase classname="src.backend.backend.users.tests.test_user_authentication.UserAuthTest" name="test_deactivate_user" time="0.180"><error message="failed on setup with &quot;django.db.utils.OperationalError: near &quot;[]&quot;: syntax error&quot;">self = &lt;django.db.backends.utils.CursorWrapper object at 0x7ff8086be8b0&gt;
+sql = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+ignored_wrapper_args = (False, {'connection': &lt;django.db.backends.sqlite3.base.DatabaseWrapper object at 0x7ff806d365b0&gt;, 'cursor': &lt;django.db.backends.utils.CursorWrapper object at 0x7ff8086be8b0&gt;})
+
+    def _execute(self, sql, params, *ignored_wrapper_args):
+        self.db.validate_no_broken_transaction()
+        with self.db.wrap_database_errors:
+            if params is None:
+                # params default might be backend specific.
+&gt;               return self.cursor.execute(sql)
+
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x7ff8086c43a0&gt;
+query = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+
+    def execute(self, query, params=None):
+        if params is None:
+&gt;           return Database.Cursor.execute(self, query)
+E           sqlite3.OperationalError: near "[]": syntax error
+
+../../venv/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py:411: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+request = &lt;SubRequest '_django_setup_unittest' for &lt;TestCaseFunction test_deactivate_user&gt;&gt;
+django_db_blocker = &lt;pytest_django.plugin._DatabaseBlocker object at 0x7ff804e94160&gt;
+
+    @pytest.fixture(autouse=True, scope="class")
+    def _django_setup_unittest(request, django_db_blocker):
+        """Setup a django unittest, internal to pytest-django."""
+        if not django_settings_is_configured() or not is_django_unittest(request):
+            yield
+            return
+    
+        # Fix/patch pytest.
+        # Before pytest 5.4: https://github.com/pytest-dev/pytest/issues/5991
+        # After pytest 5.4: https://github.com/pytest-dev/pytest-django/issues/824
+        from _pytest.monkeypatch import MonkeyPatch
+    
+        def non_debugging_runtest(self):
+            self._testcase(result=self)
+    
+        mp_debug = MonkeyPatch()
+        mp_debug.setattr("_pytest.unittest.TestCaseFunction.runtest", non_debugging_runtest)
+    
+&gt;       request.getfixturevalue("django_db_setup")
+
+../../venv/lib/python3.8/site-packages/pytest_django/plugin.py:534: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv/lib/python3.8/site-packages/pytest_django/fixtures.py:105: in django_db_setup
+    db_cfg = setup_databases(
+../../venv/lib/python3.8/site-packages/django/test/utils.py:170: in setup_databases
+    connection.creation.create_test_db(
+../../venv/lib/python3.8/site-packages/django/db/backends/base/creation.py:72: in create_test_db
+    call_command(
+../../venv/lib/python3.8/site-packages/django/core/management/__init__.py:168: in call_command
+    return command.execute(*args, **defaults)
+../../venv/lib/python3.8/site-packages/django/core/management/base.py:371: in execute
+    output = self.handle(*args, **options)
+../../venv/lib/python3.8/site-packages/pytest_django/fixtures.py:167: in handle
+    return super(MigrateSilentCommand, self).handle(*args, **kwargs)
+../../venv/lib/python3.8/site-packages/django/core/management/base.py:85: in wrapped
+    res = handle_func(*args, **kwargs)
+../../venv/lib/python3.8/site-packages/django/core/management/commands/migrate.py:214: in handle
+    self.sync_apps(connection, executor.loader.unmigrated_apps)
+../../venv/lib/python3.8/site-packages/django/core/management/commands/migrate.py:348: in sync_apps
+    editor.create_model(model)
+../../venv/lib/python3.8/site-packages/django/db/backends/base/schema.py:324: in create_model
+    self.execute(sql, params or None)
+../../venv/lib/python3.8/site-packages/django/db/backends/base/schema.py:142: in execute
+    cursor.execute(sql, params)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:66: in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:75: in _execute_with_wrappers
+    return executor(sql, params, many, context)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: in _execute
+    return self.cursor.execute(sql)
+../../venv/lib/python3.8/site-packages/django/db/utils.py:90: in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: in _execute
+    return self.cursor.execute(sql)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x7ff8086c43a0&gt;
+query = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+
+    def execute(self, query, params=None):
+        if params is None:
+&gt;           return Database.Cursor.execute(self, query)
+E           django.db.utils.OperationalError: near "[]": syntax error
+
+../../venv/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py:411: OperationalError</error></testcase><testcase classname="src.backend.backend.users.tests.test_user_authentication.UserAuthTest" name="test_reactivate_user" time="0.001"><error message="failed on setup with &quot;django.db.utils.OperationalError: near &quot;[]&quot;: syntax error&quot;">self = &lt;django.db.backends.utils.CursorWrapper object at 0x7ff8086be8b0&gt;
+sql = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+ignored_wrapper_args = (False, {'connection': &lt;django.db.backends.sqlite3.base.DatabaseWrapper object at 0x7ff806d365b0&gt;, 'cursor': &lt;django.db.backends.utils.CursorWrapper object at 0x7ff8086be8b0&gt;})
+
+    def _execute(self, sql, params, *ignored_wrapper_args):
+        self.db.validate_no_broken_transaction()
+        with self.db.wrap_database_errors:
+            if params is None:
+                # params default might be backend specific.
+&gt;               return self.cursor.execute(sql)
+
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x7ff8086c43a0&gt;
+query = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+
+    def execute(self, query, params=None):
+        if params is None:
+&gt;           return Database.Cursor.execute(self, query)
+E           sqlite3.OperationalError: near "[]": syntax error
+
+../../venv/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py:411: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+request = &lt;SubRequest '_django_setup_unittest' for &lt;TestCaseFunction test_deactivate_user&gt;&gt;
+django_db_blocker = &lt;pytest_django.plugin._DatabaseBlocker object at 0x7ff804e94160&gt;
+
+    @pytest.fixture(autouse=True, scope="class")
+    def _django_setup_unittest(request, django_db_blocker):
+        """Setup a django unittest, internal to pytest-django."""
+        if not django_settings_is_configured() or not is_django_unittest(request):
+            yield
+            return
+    
+        # Fix/patch pytest.
+        # Before pytest 5.4: https://github.com/pytest-dev/pytest/issues/5991
+        # After pytest 5.4: https://github.com/pytest-dev/pytest-django/issues/824
+        from _pytest.monkeypatch import MonkeyPatch
+    
+        def non_debugging_runtest(self):
+            self._testcase(result=self)
+    
+        mp_debug = MonkeyPatch()
+        mp_debug.setattr("_pytest.unittest.TestCaseFunction.runtest", non_debugging_runtest)
+    
+&gt;       request.getfixturevalue("django_db_setup")
+
+../../venv/lib/python3.8/site-packages/pytest_django/plugin.py:534: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv/lib/python3.8/site-packages/pytest_django/fixtures.py:105: in django_db_setup
+    db_cfg = setup_databases(
+../../venv/lib/python3.8/site-packages/django/test/utils.py:170: in setup_databases
+    connection.creation.create_test_db(
+../../venv/lib/python3.8/site-packages/django/db/backends/base/creation.py:72: in create_test_db
+    call_command(
+../../venv/lib/python3.8/site-packages/django/core/management/__init__.py:168: in call_command
+    return command.execute(*args, **defaults)
+../../venv/lib/python3.8/site-packages/django/core/management/base.py:371: in execute
+    output = self.handle(*args, **options)
+../../venv/lib/python3.8/site-packages/pytest_django/fixtures.py:167: in handle
+    return super(MigrateSilentCommand, self).handle(*args, **kwargs)
+../../venv/lib/python3.8/site-packages/django/core/management/base.py:85: in wrapped
+    res = handle_func(*args, **kwargs)
+../../venv/lib/python3.8/site-packages/django/core/management/commands/migrate.py:214: in handle
+    self.sync_apps(connection, executor.loader.unmigrated_apps)
+../../venv/lib/python3.8/site-packages/django/core/management/commands/migrate.py:348: in sync_apps
+    editor.create_model(model)
+../../venv/lib/python3.8/site-packages/django/db/backends/base/schema.py:324: in create_model
+    self.execute(sql, params or None)
+../../venv/lib/python3.8/site-packages/django/db/backends/base/schema.py:142: in execute
+    cursor.execute(sql, params)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:66: in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:75: in _execute_with_wrappers
+    return executor(sql, params, many, context)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: in _execute
+    return self.cursor.execute(sql)
+../../venv/lib/python3.8/site-packages/django/db/utils.py:90: in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: in _execute
+    return self.cursor.execute(sql)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x7ff8086c43a0&gt;
+query = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+
+    def execute(self, query, params=None):
+        if params is None:
+&gt;           return Database.Cursor.execute(self, query)
+E           django.db.utils.OperationalError: near "[]": syntax error
+
+../../venv/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py:411: OperationalError</error></testcase><testcase classname="src.backend.backend.users.tests.test_user_authentication.UserAuthTest" name="test_unauthorized_token_request" time="0.001"><error message="failed on setup with &quot;django.db.utils.OperationalError: near &quot;[]&quot;: syntax error&quot;">self = &lt;django.db.backends.utils.CursorWrapper object at 0x7ff8086be8b0&gt;
+sql = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+ignored_wrapper_args = (False, {'connection': &lt;django.db.backends.sqlite3.base.DatabaseWrapper object at 0x7ff806d365b0&gt;, 'cursor': &lt;django.db.backends.utils.CursorWrapper object at 0x7ff8086be8b0&gt;})
+
+    def _execute(self, sql, params, *ignored_wrapper_args):
+        self.db.validate_no_broken_transaction()
+        with self.db.wrap_database_errors:
+            if params is None:
+                # params default might be backend specific.
+&gt;               return self.cursor.execute(sql)
+
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x7ff8086c43a0&gt;
+query = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+
+    def execute(self, query, params=None):
+        if params is None:
+&gt;           return Database.Cursor.execute(self, query)
+E           sqlite3.OperationalError: near "[]": syntax error
+
+../../venv/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py:411: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+request = &lt;SubRequest '_django_setup_unittest' for &lt;TestCaseFunction test_deactivate_user&gt;&gt;
+django_db_blocker = &lt;pytest_django.plugin._DatabaseBlocker object at 0x7ff804e94160&gt;
+
+    @pytest.fixture(autouse=True, scope="class")
+    def _django_setup_unittest(request, django_db_blocker):
+        """Setup a django unittest, internal to pytest-django."""
+        if not django_settings_is_configured() or not is_django_unittest(request):
+            yield
+            return
+    
+        # Fix/patch pytest.
+        # Before pytest 5.4: https://github.com/pytest-dev/pytest/issues/5991
+        # After pytest 5.4: https://github.com/pytest-dev/pytest-django/issues/824
+        from _pytest.monkeypatch import MonkeyPatch
+    
+        def non_debugging_runtest(self):
+            self._testcase(result=self)
+    
+        mp_debug = MonkeyPatch()
+        mp_debug.setattr("_pytest.unittest.TestCaseFunction.runtest", non_debugging_runtest)
+    
+&gt;       request.getfixturevalue("django_db_setup")
+
+../../venv/lib/python3.8/site-packages/pytest_django/plugin.py:534: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv/lib/python3.8/site-packages/pytest_django/fixtures.py:105: in django_db_setup
+    db_cfg = setup_databases(
+../../venv/lib/python3.8/site-packages/django/test/utils.py:170: in setup_databases
+    connection.creation.create_test_db(
+../../venv/lib/python3.8/site-packages/django/db/backends/base/creation.py:72: in create_test_db
+    call_command(
+../../venv/lib/python3.8/site-packages/django/core/management/__init__.py:168: in call_command
+    return command.execute(*args, **defaults)
+../../venv/lib/python3.8/site-packages/django/core/management/base.py:371: in execute
+    output = self.handle(*args, **options)
+../../venv/lib/python3.8/site-packages/pytest_django/fixtures.py:167: in handle
+    return super(MigrateSilentCommand, self).handle(*args, **kwargs)
+../../venv/lib/python3.8/site-packages/django/core/management/base.py:85: in wrapped
+    res = handle_func(*args, **kwargs)
+../../venv/lib/python3.8/site-packages/django/core/management/commands/migrate.py:214: in handle
+    self.sync_apps(connection, executor.loader.unmigrated_apps)
+../../venv/lib/python3.8/site-packages/django/core/management/commands/migrate.py:348: in sync_apps
+    editor.create_model(model)
+../../venv/lib/python3.8/site-packages/django/db/backends/base/schema.py:324: in create_model
+    self.execute(sql, params or None)
+../../venv/lib/python3.8/site-packages/django/db/backends/base/schema.py:142: in execute
+    cursor.execute(sql, params)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:66: in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:75: in _execute_with_wrappers
+    return executor(sql, params, many, context)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: in _execute
+    return self.cursor.execute(sql)
+../../venv/lib/python3.8/site-packages/django/db/utils.py:90: in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: in _execute
+    return self.cursor.execute(sql)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x7ff8086c43a0&gt;
+query = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+
+    def execute(self, query, params=None):
+        if params is None:
+&gt;           return Database.Cursor.execute(self, query)
+E           django.db.utils.OperationalError: near "[]": syntax error
+
+../../venv/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py:411: OperationalError</error></testcase><testcase classname="src.backend.backend.users.tests.test_user_authentication.UserAuthTest" name="test_user_auth" time="0.001"><error message="failed on setup with &quot;django.db.utils.OperationalError: near &quot;[]&quot;: syntax error&quot;">self = &lt;django.db.backends.utils.CursorWrapper object at 0x7ff8086be8b0&gt;
+sql = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+ignored_wrapper_args = (False, {'connection': &lt;django.db.backends.sqlite3.base.DatabaseWrapper object at 0x7ff806d365b0&gt;, 'cursor': &lt;django.db.backends.utils.CursorWrapper object at 0x7ff8086be8b0&gt;})
+
+    def _execute(self, sql, params, *ignored_wrapper_args):
+        self.db.validate_no_broken_transaction()
+        with self.db.wrap_database_errors:
+            if params is None:
+                # params default might be backend specific.
+&gt;               return self.cursor.execute(sql)
+
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x7ff8086c43a0&gt;
+query = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+
+    def execute(self, query, params=None):
+        if params is None:
+&gt;           return Database.Cursor.execute(self, query)
+E           sqlite3.OperationalError: near "[]": syntax error
+
+../../venv/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py:411: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+request = &lt;SubRequest '_django_setup_unittest' for &lt;TestCaseFunction test_deactivate_user&gt;&gt;
+django_db_blocker = &lt;pytest_django.plugin._DatabaseBlocker object at 0x7ff804e94160&gt;
+
+    @pytest.fixture(autouse=True, scope="class")
+    def _django_setup_unittest(request, django_db_blocker):
+        """Setup a django unittest, internal to pytest-django."""
+        if not django_settings_is_configured() or not is_django_unittest(request):
+            yield
+            return
+    
+        # Fix/patch pytest.
+        # Before pytest 5.4: https://github.com/pytest-dev/pytest/issues/5991
+        # After pytest 5.4: https://github.com/pytest-dev/pytest-django/issues/824
+        from _pytest.monkeypatch import MonkeyPatch
+    
+        def non_debugging_runtest(self):
+            self._testcase(result=self)
+    
+        mp_debug = MonkeyPatch()
+        mp_debug.setattr("_pytest.unittest.TestCaseFunction.runtest", non_debugging_runtest)
+    
+&gt;       request.getfixturevalue("django_db_setup")
+
+../../venv/lib/python3.8/site-packages/pytest_django/plugin.py:534: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv/lib/python3.8/site-packages/pytest_django/fixtures.py:105: in django_db_setup
+    db_cfg = setup_databases(
+../../venv/lib/python3.8/site-packages/django/test/utils.py:170: in setup_databases
+    connection.creation.create_test_db(
+../../venv/lib/python3.8/site-packages/django/db/backends/base/creation.py:72: in create_test_db
+    call_command(
+../../venv/lib/python3.8/site-packages/django/core/management/__init__.py:168: in call_command
+    return command.execute(*args, **defaults)
+../../venv/lib/python3.8/site-packages/django/core/management/base.py:371: in execute
+    output = self.handle(*args, **options)
+../../venv/lib/python3.8/site-packages/pytest_django/fixtures.py:167: in handle
+    return super(MigrateSilentCommand, self).handle(*args, **kwargs)
+../../venv/lib/python3.8/site-packages/django/core/management/base.py:85: in wrapped
+    res = handle_func(*args, **kwargs)
+../../venv/lib/python3.8/site-packages/django/core/management/commands/migrate.py:214: in handle
+    self.sync_apps(connection, executor.loader.unmigrated_apps)
+../../venv/lib/python3.8/site-packages/django/core/management/commands/migrate.py:348: in sync_apps
+    editor.create_model(model)
+../../venv/lib/python3.8/site-packages/django/db/backends/base/schema.py:324: in create_model
+    self.execute(sql, params or None)
+../../venv/lib/python3.8/site-packages/django/db/backends/base/schema.py:142: in execute
+    cursor.execute(sql, params)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:66: in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:75: in _execute_with_wrappers
+    return executor(sql, params, many, context)
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: in _execute
+    return self.cursor.execute(sql)
+../../venv/lib/python3.8/site-packages/django/db/utils.py:90: in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+../../venv/lib/python3.8/site-packages/django/db/backends/utils.py:82: in _execute
+    return self.cursor.execute(sql)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;django.db.backends.sqlite3.base.SQLiteCursorWrapper object at 0x7ff8086c43a0&gt;
+query = 'CREATE TABLE "products_brand" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "tags" varchar(200)[] NOT NULL, "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL)'
+params = None
+
+    def execute(self, query, params=None):
+        if params is None:
+&gt;           return Database.Cursor.execute(self, query)
+E           django.db.utils.OperationalError: near "[]": syntax error
+
+../../venv/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py:411: OperationalError</error></testcase></testsuite></testsuites>
