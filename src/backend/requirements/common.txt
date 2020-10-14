@@ -17,7 +17,7 @@ drf-yasg==1.17.1 #https://github.com/axnsan12/drf-yasg
 django-cors-headers==3.5.0 # https://github.com/adamchainz/django-cors-headers
 django-storages[azure] #https://django-storages.readthedocs.io/en/latest/backends/azure.html
 django-environ==0.4.5  #https://github.com/joke2k/django-environ
-celery==4.4.7  # pyup: < 5.0  # https://github.com/celery/celery
+celery==5.0.0  # pyup: < 5.0  # https://github.com/celery/celery
 django-celery-beat==2.0.0  # https://github.com/celery/django-celery-beat
 flower==0.9.5  # https://github.com/mher/flower
 
