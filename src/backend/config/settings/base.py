@@ -218,6 +218,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     # "backend.utils.middleware.AuthMiddleware"
 ]
 
@@ -420,3 +422,6 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_TIME_LIMIT = 5 * 60
 CELERY_TASK_SOFT_TIME_LIMIT = 60
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:3030", "http://127.0.0.1:3030"]
