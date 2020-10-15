@@ -98,6 +98,10 @@
 </template>
 <script>
 export default {
+  head: {
+    title: 'Sign Up'
+  },
+
   data() {
     return {
       firstName: '',

@@ -1,61 +1,61 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="drawer" app>
-      <v-list dense>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-login</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Login</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-account</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Sign Up</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+    <v-navigation-drawer v-model="drawer"    
+      absolute
+      bottom
+      temporary>
+      <v-card-title>Categories</v-card-title>
 
+      <v-list 
+          v-for="(item, index) in categories"
+          :key="index" dense>
         <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-help</v-icon>
-          </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Products</v-list-item-title>
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
+
     </v-navigation-drawer>
 
-    <v-app-bar app color="#1E88E5" hide-on-scroll>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>ShopIt</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-text-field
-        hide-details
-        label="Search Products"
-        outlined
-        :rules="rules"
-      ></v-text-field>
-      <v-app-bar-nav-icon> <v-icon>mdi-magnify</v-icon></v-app-bar-nav-icon>
+    <v-app-bar app color="#03045e" class="appbar" hide-on-scroll>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" dark></v-app-bar-nav-icon>
+      <v-toolbar-title class="brand">ShopIt</v-toolbar-title>
+
+      <v-spacer />
+      <div class="search-container">
+        <v-text-field append-icon="mdi-close" prepend-icon="mdi-magnify" 
+          filled 
+          dense 
+          flat
+          solo />
+      </div>
       <v-spacer />
 
-      <v-btn rounded class="ma-2" color="#00897B">Login</v-btn>
-      <v-btn rounded color="#00897B" dark>Register</v-btn>
-    </v-app-bar>
+      <v-menu transition="slide-y-transition" offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="primary"
+            dark
+            v-bind="attrs"
+            v-on="on"
+          >
+          My Account
+        </v-btn>
+        </template>
 
-    <v-main>
-      <v-container class="fill-height" fluid>
-        <v-row align="center" justify="center">
-          <v-col class="text-center">
-            <v-tooltip left> </v-tooltip>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
+        <v-list class="account-menu">
+          <v-list-item
+            v-for="(item, index) in menu"
+            :key="index"
+          >
+            <NLink :to="item.link">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </NLink>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+  </v-app-bar>
   </div>
 </template>
 
@@ -65,7 +65,40 @@ export default {
     source: String,
   },
   data: () => ({
-    drawer: true,
+    menu: [
+        { title: 'Sign In', link: '/signin' },
+        { title: 'Sign Up', link: '/signup' },
+      ],
+    drawer: false,
+    categories: [
+      { title: 'Computers' },
+      { title: 'Grocery' },
+      { title: 'Books' },
+      { title: 'Home electronics' },
+    ]
   }),
 }
 </script>
+
+<style>
+  *{
+    text-decoration: none;
+  }
+
+ .brand {
+    color: #fff;
+  }
+
+  .search-container {
+    background: #fff;
+    padding:0 8px;
+    border-radius: 4px;
+    height: 40px;
+    width: 400px;
+  }
+
+  .account-menu{
+    border-radius: 4px !important;
+    margin-top: 10px;
+  }
+</style>

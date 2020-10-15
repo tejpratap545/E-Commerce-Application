@@ -39,6 +39,9 @@
 </template>
 <script>
 export default {
+  head: {
+    title: 'Sign In'
+  },
   data() {
     return { username: '', show_password: false, password: '' }
   },

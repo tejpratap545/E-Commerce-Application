@@ -1,25 +1,23 @@
 <template>
   <v-app dark>
+    <Appbar />
     <v-main>
       <v-container>
-        <Appbar />
-        <Snackbar></Snackbar>
         <nuxt />
       </v-container>
     </v-main>
-    <v-footer color="#1E88E5" class="text-center">
-      <span class="text-center">&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    <Footer />
   </v-app>
 </template>
 
 <script>
-import Appbar from '@/components/Appbar.vue'
-import Snackbar from '~/components/utils/Snackbar.vue'
+import Appbar from '~/components/Appbar.vue'
+import Footer from '~/components/Footer.vue'
+
 export default {
   components: {
     Appbar,
-    Snackbar,
+    Footer,
   },
 }
 </script>
