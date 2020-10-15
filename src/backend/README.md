@@ -61,7 +61,7 @@
     cd ../..
     python3 -m venv venv
     source venv/bin/activate   # for liux and mac users users
-    source venv/Script/activate # for windoes users
+    source venv/Script/activate # for windows users
 
 ### 3. Install python requirements
 
