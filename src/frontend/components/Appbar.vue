@@ -1,9 +1,10 @@
 <template>
   <div>
     <v-navigation-drawer v-model="drawer"    
-      absolute
+      fixed
       bottom
-      temporary>
+      temporary app>
+
       <v-card-title>Categories</v-card-title>
 
       <v-list 
@@ -18,10 +19,12 @@
 
     </v-navigation-drawer>
 
-    <v-app-bar app color="#03045e" class="appbar" hide-on-scroll>
+    <v-app-bar app color="#03045e" class="appbar">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" dark></v-app-bar-nav-icon>
-      <v-toolbar-title class="brand">ShopIt</v-toolbar-title>
-
+      
+      <NLink to="/">
+        <v-toolbar-title class="brand">ShopIt</v-toolbar-title>
+      </NLink>
       <v-spacer />
       <div class="search-container">
         <v-text-field append-icon="mdi-close" prepend-icon="mdi-magnify" 
