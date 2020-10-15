@@ -126,23 +126,34 @@ export default {
   },
   computed: {
     contactNumber() {
-      return `"+${this.dialCode}${this.cNumber}"`
+      return `+${this.dialCode}${this.cNumber}`
     },
   },
   methods: {
     onSelect({ name, iso2, dialCode }) {
       this.dialCode = dialCode
     },
-    createAccount() {
-      this.$axios
+    async createAccount() {
+      await this.$axios
         .$post('user/signup', {
           email: this.email,
           contact_number: this.contactNumber,
-          first_name: this.first_name,
-          last_name: this.last_name,
+          first_name: this.firstName,
+          last_name: this.lastName,
           password: this.password,
         })
-        .then((res) => console.log(res))
+        .then((res) => {
+          this.$notifier.showMessage({
+            content: `Welcome ${res.first_name} , Your account is successfully created  thanks to joining us`,
+            color: 'success',
+          })
+        })
+        .catch((err) => {
+          this.$notifier.showMessage({
+            content: `sorry something went wrong Please check your email and contact number `,
+            color: 'info',
+          })
+        })
     },
   },
 }
