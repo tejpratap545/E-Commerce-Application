@@ -12,9 +12,9 @@
                 <v-text-field
                   v-model="firstName"
                   :rules="[rules.required]"
+                  class="pa-0 ma-0"
                   label="First Name"
                   required
-                  class="pa-0 ma-0"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -22,9 +22,9 @@
               <v-col class="ma-0 pa-0">
                 <v-text-field
                   v-model="lastName"
-                  label="Last Name"
                   required
                   class="pa-0 ma-0"
+                  label="Last Name"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -33,9 +33,9 @@
                 <v-text-field
                   v-model="email"
                   :rules="[rules.required, rules.email]"
+                  class="pa-0 ma-0"
                   label="E-mail"
                   required
-                  class="pa-0 ma-0"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -47,14 +47,14 @@
                 >
                 </vue-country-code>
               </v-col>
-              <v-col cols="8" sm="10" md="9" lg="10" class="ma-0 mt-2 pa-0">
+              <v-col class="ma-0 mt-2 pa-0" cols="8" lg="10" md="9" sm="10">
                 <v-text-field
                   v-model="cNumber"
-                  label="Contact Number"
-                  type="number"
-                  required
                   :rules="[rules.required, rules.maxContactNumber]"
                   class="pa-0 ma-0"
+                  label="Contact Number"
+                  required
+                  type="number"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -62,11 +62,11 @@
               <v-col>
                 <v-text-field
                   v-model="password1"
-                  class="pa-0 ma-0 justify-center"
-                  type="password"
                   :rules="[rules.min, rules.required]"
-                  label="Enter Your Password"
+                  class="pa-0 ma-0 justify-center"
                   hint="password must have min 6 character with at at least one uppercase, one lowercase ,one digit and one symbol"
+                  label="Enter Your Password"
+                  type="password"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -74,18 +74,18 @@
               <v-col>
                 <v-text-field
                   v-model="password"
-                  class="pa-0 ma-0 justify-center"
                   :rules="[rules.passwordMatch]"
-                  type="text"
-                  label="Enter Your Password"
+                  class="pa-0 ma-0 justify-center"
                   hint="varify your Password"
+                  label="Enter Your Password"
+                  type="text"
                   @click:append="show1 = !show1"
                 ></v-text-field>
               </v-col>
             </v-row>
             <v-row>
               <v-col class="ma-0 pa-0">
-                <v-btn class="ma-0 pa-0" block color="" @click="createAccount">
+                <v-btn block class="ma-0 pa-0" color="" @click="createAccount">
                   Continue
                 </v-btn>
               </v-col>
