@@ -29,7 +29,8 @@
                   @click:append="show_password = !show_password"
                 ></v-text-field>
               </v-col>
-              <v-btn block color="success" @click="signIn"> signin </v-btn>
+
+              <v-btn block color="success" @click="logIn"> logIn </v-btn>
             </v-row>
           </v-form>
         </v-card-text>
@@ -39,31 +40,42 @@
 </template>
 <script>
 export default {
-  head: {
-    title: 'Sign In'
-  },
   data() {
     return { username: '', show_password: false, password: '' }
   },
   methods: {
-    signIn() {
+    logIn() {
+      this.$auth.logout()
+      this.$axios.setToken(false)
       this.$axios
-        .$post('/auth/token', {
+        .$post('auth/token', {
           username: this.username,
           password: this.password,
-          client_id: 'zFCncJkZxUMOWSM50emq8AnQAG66VlXfe8vkJuV6',
-          client_secret:
-            '4BZit68P3ePBZBlIMLKrBV9w9FCwJcu7zHj6WHatmIDSF03LkiQ4IuRTgPrO8xtcjBPL1pVPlPee4Qz9YGgqxkv8YiUxycw1IdCef98OxjVW09KVs3fZQZIpM5MeqdYU',
+          client_id: this.$config.djangoClientId,
+          client_secret: this.$config.djangoClientSecret,
           grant_type: 'password',
         })
         .then((res) => {
-          console.log(res)
-          this.$notifier.showMessage({
-            content: `You have successfully login`,
-            color: 'success',
+          this.$auth.setToken('local', 'Bearer password ' + res.access_token)
+          this.$auth.$storage.setUniversal('logInDate', new Date())
+          this.$auth.setRefreshToken('local', res.refresh_token)
+          this.$axios.setHeader(
+            'Authorization',
+            'Bearer password ' + res.access_token
+          )
+
+          this.$axios.get('/user/me').then((res) => {
+            this.$auth.setUser(res.data)
+            this.$notifier.showMessage({
+              content: `welcome ${res.data.first_name} have successfully login`,
+              color: 'success',
+            })
           })
         })
     },
+  },
+  head: {
+    title: 'Sign In',
   },
 }
 </script>

@@ -98,10 +98,6 @@
 </template>
 <script>
 export default {
-  head: {
-    title: 'Sign Up'
-  },
-
   data() {
     return {
       firstName: '',
@@ -152,13 +148,16 @@ export default {
             color: 'success',
           })
         })
-        .catch((err) => {
+        .catch(() => {
           this.$notifier.showMessage({
             content: `sorry something went wrong Please check your email and contact number `,
             color: 'info',
           })
         })
     },
+  },
+  head: {
+    title: 'Sign Up',
   },
 }
 </script>

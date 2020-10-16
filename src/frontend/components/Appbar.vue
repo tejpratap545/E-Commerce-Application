@@ -1,64 +1,55 @@
 <template>
   <div>
-    <v-navigation-drawer v-model="drawer"    
-      fixed
-      bottom
-      temporary app>
-
+    <v-navigation-drawer v-model="drawer" fixed bottom temporary app>
       <v-card-title>Categories</v-card-title>
 
-      <v-list 
-          v-for="(item, index) in categories"
-          :key="index" dense>
+      <v-list v-for="(item, index) in categories" :key="index" dense>
         <v-list-item link>
           <v-list-item-content>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
-
     </v-navigation-drawer>
 
     <v-app-bar app color="#03045e" class="appbar">
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" dark></v-app-bar-nav-icon>
-      
+      <v-app-bar-nav-icon
+        dark
+        @click.stop="drawer = !drawer"
+      ></v-app-bar-nav-icon>
+
       <NLink to="/">
         <v-toolbar-title class="brand">ShopIt</v-toolbar-title>
       </NLink>
       <v-spacer />
       <div class="search-container">
-        <v-text-field append-icon="mdi-close" prepend-icon="mdi-magnify" 
-          filled 
-          dense 
+        <v-text-field
+          append-icon="mdi-close"
+          prepend-icon="mdi-magnify"
+          filled
+          dense
           flat
-          solo />
+          solo
+        />
       </div>
       <v-spacer />
 
       <v-menu transition="slide-y-transition" offset-y>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="primary"
-            dark
-            v-bind="attrs"
-            v-on="on"
-          >
-          My Account
-        </v-btn>
+          <v-btn color="primary" dark v-bind="attrs" v-on="on">
+            My Account
+          </v-btn>
         </template>
 
         <v-list class="account-menu">
-          <v-list-item
-            v-for="(item, index) in menu"
-            :key="index"
-          >
+          <v-list-item v-for="(item, index) in menu" :key="index">
             <NLink :to="item.link">
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </NLink>
           </v-list-item>
         </v-list>
       </v-menu>
-  </v-app-bar>
+    </v-app-bar>
   </div>
 </template>
 
@@ -69,39 +60,39 @@ export default {
   },
   data: () => ({
     menu: [
-        { title: 'Sign In', link: '/signin' },
-        { title: 'Sign Up', link: '/signup' },
-      ],
+      { title: 'Sign In', link: '/signin' },
+      { title: 'Sign Up', link: '/signup' },
+    ],
     drawer: false,
     categories: [
       { title: 'Computers' },
       { title: 'Grocery' },
       { title: 'Books' },
       { title: 'Home electronics' },
-    ]
+    ],
   }),
 }
 </script>
 
 <style>
-  *{
-    text-decoration: none;
-  }
+* {
+  text-decoration: none;
+}
 
- .brand {
-    color: #fff;
-  }
+.brand {
+  color: #fff;
+}
 
-  .search-container {
-    background: #fff;
-    padding:0 8px;
-    border-radius: 4px;
-    height: 40px;
-    width: 400px;
-  }
+.search-container {
+  background: #fff;
+  padding: 0 8px;
+  border-radius: 4px;
+  height: 40px;
+  width: 400px;
+}
 
-  .account-menu{
-    border-radius: 4px !important;
-    margin-top: 10px;
-  }
+.account-menu {
+  border-radius: 4px !important;
+  margin-top: 10px;
+}
 </style>

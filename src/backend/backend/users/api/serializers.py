@@ -1,4 +1,4 @@
-from backend.users.models import User
+from backend.users.models import BillingAddress, Profile, ShippingAddress, User
 from django.conf import settings
 from django.db.models import Q
 from rest_framework import serializers, status
@@ -81,3 +81,28 @@ class PasswordChangeSerializer(serializers.Serializer):
             raise serializers.ValidationError("both password must be same")
 
         return data
+
+
+class UserSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
+
+
+class ShippingAddressSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        fields = "__all__"
+
+
+class BillingAddressSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = BillingAddress
+        fields = "__all__"
+
+
+class UserProfileSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = "__all__"
+        depth = 20

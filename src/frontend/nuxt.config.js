@@ -1,4 +1,3 @@
-import { process } from 'babel-jest'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
@@ -18,7 +17,6 @@ export default {
     css: [],
 
     // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-    plugins: ['@/plugins/countryCode', '~/plugins/notifier.js'],
 
     // Auto import components (https://go.nuxtjs.dev/config-components)
     components: true,
@@ -44,9 +42,10 @@ export default {
         '@nuxtjs/auth',
     ],
 
+    plugins: ['@/plugins/countryCode', '~/plugins/notifier.js'],
     // Axios module configuration (https://go.nuxtjs.dev/config-axios)
     axios: {
-        baseURL: 'http://127.0.0.1:8000/api/',
+        baseURL: process.env.API_BASE_URL || 'http://localhost:8000/api/',
     },
 
     // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
@@ -72,5 +71,32 @@ export default {
     build: {},
     server: {
         port: 3030,
+    },
+
+    // env variable https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config/
+    publicRuntimeConfig: {
+        apiBaseURL: process.env.API_BASE_URL || 'http://localhost:8000/api/',
+        djangoClientId: process.env.DJANGO_CLIENT_ID || '',
+        djangoClientSecret: process.env.DJANGO_CLIENT_SC || '',
+    },
+    privateRuntimeConfig: {},
+    auth: {
+        localStorage: false,
+        cookie: {
+            options: {
+                expires: 7,
+            },
+        },
+        strategies: {
+            local: {
+                endpoints: {
+                    login: { url: '/auth/token', method: 'post', propertyName: false },
+                    logout: false,
+                    user: false,
+                },
+                tokenType: 'Bearer password',
+            },
+        },
+        plugins: ['~/plugins/axios.js', { src: '~/plugins/auth.js', mode: 'client' }],
     },
 }

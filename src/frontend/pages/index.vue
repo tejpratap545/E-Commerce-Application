@@ -1,37 +1,20 @@
 <template>
   <div>
     <v-carousel v-model="model">
-    <v-carousel-item
-      v-for="(color, i) in colors"
-      :key="color"
-    >
-      <v-sheet
-        :color="color"
-        height="100%"
-        tile
-      >
-        <v-row
-          class="fill-height"
-          align="center"
-          justify="center"
-        >
-          <div class="display-3">
-            Slide {{ i + 1 }}
-          </div>
-        </v-row>
-      </v-sheet>
-    </v-carousel-item>
+      <v-carousel-item v-for="(color, i) in colors" :key="color">
+        <v-sheet :color="color" height="100%" tile>
+          <v-row class="fill-height" align="center" justify="center">
+            <div class="display-3">Slide {{ i + 1 }}</div>
+          </v-row>
+        </v-sheet>
+      </v-carousel-item>
     </v-carousel>
 
     <div class="text-h4 text-center ma-5">Top products</div>
 
     <v-container class="products=container" fluid>
       <v-row align="center" justify="center">
-        <v-col
-          v-for="card in cards"
-          :key="card.title"
-          :cols="card.flex"
-        >
+        <v-col v-for="card in cards" :key="card.title" :cols="card.flex">
           <v-card>
             <NLink to="/product">
               <v-img
@@ -68,27 +51,45 @@
 
 <script>
 export default {
-  head: {
-    title: 'Home'
-  },
   data: () => ({
     model: 0,
-    colors: [
-      'primary',
-      'secondary',
-      'yellow darken-2',
-      'red',
-      'orange',
-    ],
+    colors: ['primary', 'secondary', 'yellow darken-2', 'red', 'orange'],
 
-     cards: [
-        { title: 'Pre-fab homes', src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg', flex: 3 },
-        { title: 'Favorite road trips', src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg', flex: 3 },
-        { title: 'Best airlines', src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg', flex: 3 },
-        { title: 'Best airlines', src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg', flex: 3 },
-        { title: 'Best airlines', src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg', flex: 3 },
-        { title: 'Best airlines', src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg', flex: 3 },
-      ],
+    cards: [
+      {
+        title: 'Pre-fab homes',
+        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
+        flex: 3,
+      },
+      {
+        title: 'Favorite road trips',
+        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
+        flex: 3,
+      },
+      {
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        flex: 3,
+      },
+      {
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        flex: 3,
+      },
+      {
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        flex: 3,
+      },
+      {
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        flex: 3,
+      },
+    ],
   }),
+  head: {
+    title: 'Home',
+  },
 }
 </script>

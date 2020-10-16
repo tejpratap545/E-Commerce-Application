@@ -94,7 +94,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().set_password(password)
 
 
-class Customer(models.Model):
+class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     default_shipping_address = models.PositiveSmallIntegerField(default=0)
     default_purchasing_address = models.PositiveSmallIntegerField(default=0)

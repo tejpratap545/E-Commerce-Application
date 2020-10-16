@@ -23,7 +23,7 @@
       </ENTRIES>
     </EXTENSION>
     <option name="launchJavascriptDebuger" value="false" />
-    <option name="port" value="8080" />
+    <option name="port" value="8000" />
     <option name="host" value="" />
     <option name="additionalOptions" value="" />
     <option name="browserUrl" value="" />
