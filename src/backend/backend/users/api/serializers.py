@@ -86,7 +86,21 @@ class PasswordChangeSerializer(serializers.Serializer):
 class UserSerializers(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
+        fields = [
+            "id",
+            "email",
+            "contact_number",
+            "first_name",
+            "last_name",
+            "date_of_birth",
+            "avatar",
+            "is_active",
+            "is_admin",
+            "is_email_verified",
+            "is_customer",
+            "is_seller",
+            "date_joined",
+        ]
 
 
 class ShippingAddressSerializers(serializers.ModelSerializer):
@@ -102,7 +116,16 @@ class BillingAddressSerializers(serializers.ModelSerializer):
 
 
 class UserProfileSerializers(serializers.ModelSerializer):
+    user = UserSerializers(read_only=True)
+    shipping_address = ShippingAddressSerializers(many=True)
+    billing_address = BillingAddressSerializers(many=True)
+
     class Meta:
         model = Profile
-        fields = "__all__"
-        depth = 20
+        fields = [
+            "user",
+            "shipping_address",
+            "billing_address",
+            "default_shipping_address",
+            "default_purchasing_address",
+        ]

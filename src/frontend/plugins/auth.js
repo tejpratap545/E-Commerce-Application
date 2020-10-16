@@ -25,6 +25,32 @@ async function refreshTokenF($auth, $axios, $config, token, refreshToken) {
         }
     }
 }
+export function logout($auth, $axios) {
+    $auth.setToken(false)
+    $auth.setRefreshToken(false)
+    $axios.setHeader('Authorization', false)
+}
+export async function signIn($axios, $auth, store, data) {
+    await $axios.$post('auth/token', data).then((res) => {
+        $auth.setToken('local', 'Bearer password ' + res.access_token)
+        $auth.$storage.setUniversal('logInDate', new Date())
+        $auth.setRefreshToken('local', res.refresh_token)
+        $axios.setHeader('Authorization', 'Bearer password ' + res.access_token)
+
+        $axios
+            .get('/user/me')
+            .then((res) => {
+                $auth.setUser(res.data[0])
+            })
+            .then((res) => {
+                store.commit('notifier/showMessage', {
+                    content: `Welcome ${res[0].first_name} , Your account is successfully created  thanks to joining us`,
+                    color: 'success',
+                })
+            })
+    })
+}
+
 export default async function ({ $axios, $auth, $config }) {
     if ($auth.loggedIn) {
         let token = $auth.getToken(strategy)
@@ -37,7 +63,7 @@ export default async function ({ $axios, $auth, $config }) {
             await $axios
                 .get('/user/me')
                 .then((resp) => {
-                    $auth.setUser(resp.data)
+                    $auth.setUser(resp.data[0])
                 })
                 .catch((err) => {
                     console.log(err)

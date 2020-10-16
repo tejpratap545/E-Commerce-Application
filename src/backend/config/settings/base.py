@@ -183,8 +183,19 @@ eF1WeQU2O9mcVlRFw2PJKAGq+25vBAt2LEUWpji+lmTXUt55H5C8eistt3o2wjUR
 O19OLBxcVqX/dgI7bKT/DQMCAwEAAQ==
 -----END PUBLIC KEY-----
 """
-REFRESH_TOKEN_EXPIRE_SECONDS = 2592000  # one month
-ACCESS_TOKEN_EXPIRE_SECONDS = 36000  # one hour
+
+REFRESH_TOKEN_EXPIRE_SECONDS = 2592000 * 3  # three month
+ACCESS_TOKEN_EXPIRE_SECONDS = 3600 * 24  # one day
+
+OAUTH2_PROVIDER = {
+    "SCOPES": {
+        "read": "Read scope",
+        "write": "Write scope",
+    },
+    "REFRESH_TOKEN_EXPIRE_SECONDS": REFRESH_TOKEN_EXPIRE_SECONDS,  # three month
+    "ACCESS_TOKEN_EXPIRE_SECONDS": ACCESS_TOKEN_EXPIRE_SECONDS,  # one day
+}
+
 # PASSWORDS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#password-hashers

@@ -39,39 +39,21 @@
   </v-row>
 </template>
 <script>
+import { logout, signIn } from '~/plugins/auth'
 export default {
   data() {
     return { username: '', show_password: false, password: '' }
   },
   methods: {
     logIn() {
-      this.$auth.logout()
-      this.$axios.setToken(false)
-      this.$axios
-        .$post('auth/token', {
-          username: this.username,
-          password: this.password,
-          client_id: this.$config.djangoClientId,
-          client_secret: this.$config.djangoClientSecret,
-          grant_type: 'password',
-        })
-        .then((res) => {
-          this.$auth.setToken('local', 'Bearer password ' + res.access_token)
-          this.$auth.$storage.setUniversal('logInDate', new Date())
-          this.$auth.setRefreshToken('local', res.refresh_token)
-          this.$axios.setHeader(
-            'Authorization',
-            'Bearer password ' + res.access_token
-          )
-
-          this.$axios.get('/user/me').then((res) => {
-            this.$auth.setUser(res.data)
-            this.$notifier.showMessage({
-              content: `welcome ${res.data.first_name} have successfully login`,
-              color: 'success',
-            })
-          })
-        })
+      logout(this.$auth, this.$axios)
+      signIn(this.$axios, this.$auth, this.$store, {
+        username: this.username,
+        password: this.password,
+        client_id: this.$config.djangoClientId,
+        client_secret: this.$config.djangoClientSecret,
+        grant_type: 'password',
+      })
     },
   },
   head: {

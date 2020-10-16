@@ -8,18 +8,12 @@ from backend.users.api.serializers import (
     UserSerializers,
     UserSignupSerializer,
 )
-from backend.users.models import (
-    BillingAddress,
-    PasswordTooWeakError,
-    Profile,
-    ShippingAddress,
-    User,
-)
+from backend.users.models import BillingAddress, PasswordTooWeakError, Profile, ShippingAddress, User
 from backend.users.permissions import IsOwner
-from rest_framework import status, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -115,3 +109,12 @@ def check_contact_number(request):
 
     return Response(data="This contact number is available", status=status.HTTP_200_OK)
 
+
+class ProfileView(APIView):
+
+    permission_classes = [IsOwner]
+
+    def get(self, request, format=None):
+        profile = Profile.objects.filter(user=self.request.user)
+        serializer = UserProfileSerializers(profile, many=True)
+        return Response(serializer.data)

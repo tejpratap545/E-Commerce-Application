@@ -6,7 +6,7 @@
           Create Account
         </v-card-title>
         <v-card-text class="my-0 py-0">
-          <v-form ref="form" v-model="valid" class="pa-3" lazy-validation>
+          <v-form ref="form" class="pa-3" lazy-validation>
             <v-row class="pa-0 ma-0 justify-center">
               <v-col class="ma-0 pa-0">
                 <v-text-field
@@ -22,7 +22,6 @@
               <v-col class="ma-0 pa-0">
                 <v-text-field
                   v-model="lastName"
-                  required
                   class="pa-0 ma-0"
                   label="Last Name"
                 ></v-text-field>
@@ -97,6 +96,7 @@
   </v-row>
 </template>
 <script>
+import { signIn, logout } from '~/plugins/auth'
 export default {
   data() {
     return {
@@ -134,6 +134,7 @@ export default {
       this.dialCode = dialCode
     },
     async createAccount() {
+      logout(this.$auth, this.$axios)
       await this.$axios
         .$post('user/signup', {
           email: this.email,
@@ -143,12 +144,19 @@ export default {
           password: this.password,
         })
         .then((res) => {
+          signIn(this.$axios, this.$auth, this.$store, {
+            username: this.email,
+            password: this.password,
+            client_id: this.$config.djangoClientId,
+            client_secret: this.$config.djangoClientSecret,
+            grant_type: 'password',
+          })
           this.$notifier.showMessage({
             content: `Welcome ${res.first_name} , Your account is successfully created  thanks to joining us`,
             color: 'success',
           })
         })
-        .catch(() => {
+        .catch((err) => {
           this.$notifier.showMessage({
             content: `sorry something went wrong Please check your email and contact number `,
             color: 'info',

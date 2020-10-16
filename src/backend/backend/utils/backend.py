@@ -77,4 +77,4 @@ def decode_jwt(jwt_value):
         raise ImproperlyConfigured("Missing setting  pubic key")
 
     decoded = jwt.decode(jwt_value, public_key, algorithms=algorithms)
-    return decoded['token']
+    return decoded["token"]

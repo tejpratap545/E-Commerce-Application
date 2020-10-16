@@ -60,7 +60,7 @@
 
     cd ../..
     python3 -m venv venv
-    source venv/bin/activate   # for liux and mac users users
+    source venv/bin/activate   # for linux and mac users  
     source venv/Script/activate # for windows users
 
 ### 3. Install python requirements
@@ -107,12 +107,12 @@
 
 #### Without docker
 
-    pg_dump -U dbusername dbname > dbbackup/db_dump_$(date +%Y-%h-%d"_"%H_%M_%S).sql
+    pg_dump -U dbusername dbname --exclude-table=django_migrations > dbbackup/db_dump_$(date +%Y-%h-%d"_"%H_%M_%S).sql
     cat dbbackup/latest_dump_file.sql | psql -U username dbname
 
 #### If database is running inside the container
 
-     docker exec -i your-db-container pg_dump -U dbusername dbname > dbbackup/db_dump_$(date +%Y-%h-%d"_"%H_%M_%S).sql
+     docker exec -i your-db-container pg_dump -U dbusername dbname --exclude-table=django_migrations > dbbackup/db_dump_$(date +%Y-%h-%d"_"%H_%M_%S).sql
      cat dbbackup/latest_dump_file.sql | docker exec -i your-db-container psql -U username dbname
 
 ### Default Servers locations
