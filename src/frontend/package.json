@@ -24,7 +24,7 @@
     "vue-stripe-checkout": "^3.5.11"
   },
   "devDependencies": {
-    "@nuxt/types": "~2.14.0",
+    "@nuxt/types": "~2.14.7",
     "@nuxtjs/vuetify": "^1.11.2",
     "@vue/test-utils": "^1.1.0",
     "babel-core": "7.0.0-bridge.0",
