@@ -19,7 +19,7 @@
     "@nuxtjs/sentry": "^4.3.5",
     "core-js": "^3.6.5",
     "date-fns": "^2.16.1",
-    "nuxt": "^2.14.5",
+    "nuxt": "^2.14.7",
     "vue-country-code": "^1.1.1",
     "vue-stripe-checkout": "^3.5.11"
   },
