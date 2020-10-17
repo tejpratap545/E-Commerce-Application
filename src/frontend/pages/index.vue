@@ -53,7 +53,7 @@
 export default {
   data: () => ({
     model: 0,
-    colors: ['primary', 'secondary', 'yellow darken-2', 'red', 'orange'],
+    colors: ['orange', 'secondary', 'yellow darken-2', 'red'],
 
     cards: [
       {

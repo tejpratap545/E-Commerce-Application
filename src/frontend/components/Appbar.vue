@@ -12,7 +12,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar app color="#03045e" class="appbar">
+    <v-app-bar app color="#77D1EC" class="appbar">
       <v-app-bar-nav-icon
         dark
         @click.stop="drawer = !drawer"
@@ -42,9 +42,27 @@
         </template>
 
         <v-list class="account-menu">
-          <v-list-item v-for="(item, index) in menu" :key="index">
-            <NLink :to="item.link">
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
+          <v-list-item>
+            <NLink to="/signin">
+              <v-list-item-title>Sign In</v-list-item-title>
+            </NLink>
+          </v-list-item>
+          <v-list-item>
+            <NLink to="/signup">
+              <v-list-item-title>Sign Up</v-list-item-title>
+            </NLink>
+          </v-list-item>
+        </v-list>
+
+        <v-list class="account-menu">
+           <v-list-item>
+            <NLink to="/profile">
+              <v-list-item-title>Profile</v-list-item-title>
+            </NLink>
+          </v-list-item>
+           <v-list-item>
+            <NLink to="/signout">
+              <v-list-item-title>Sign Out</v-list-item-title>
             </NLink>
           </v-list-item>
         </v-list>
@@ -52,17 +70,12 @@
     </v-app-bar>
   </div>
 </template>
-
 <script>
 export default {
   props: {
     source: String,
   },
   data: () => ({
-    menu: [
-      { title: 'Sign In', link: '/signin' },
-      { title: 'Sign Up', link: '/signup' },
-    ],
     drawer: false,
     categories: [
       { title: 'Computers' },
