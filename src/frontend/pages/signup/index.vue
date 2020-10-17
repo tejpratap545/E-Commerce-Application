@@ -6,7 +6,7 @@
           Create Account
         </v-card-title>
         <v-card-text class="my-0 py-0">
-          <v-form ref="form" class="pa-3" lazy-validation>
+          <v-form class="pa-3" lazy-validation>
             <v-row class="pa-0 ma-0 justify-center">
               <v-col class="ma-0 pa-0">
                 <v-text-field
@@ -77,7 +77,8 @@
                   class="pa-0 ma-0 justify-center"
                   hint="varify your Password"
                   label="Enter Your Password"
-                  type="text"
+                  :type="show1 ? 'text' : 'password'"
+                  :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                   @click:append="show1 = !show1"
                 ></v-text-field>
               </v-col>
@@ -98,8 +99,10 @@
 <script>
 import { signIn, logout } from '~/plugins/auth'
 export default {
+  middleware: 'auth-true',
   data() {
     return {
+      show1: false,
       firstName: '',
       lastName: '',
       email: '',
@@ -119,6 +122,8 @@ export default {
           if (v.length > 0) {
             const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
             return pattern.test(v) || 'Invalid e-mail.'
+          } else {
+            return false
           }
         },
       },

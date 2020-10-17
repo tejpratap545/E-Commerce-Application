@@ -97,6 +97,6 @@ export default {
                 tokenType: 'Bearer password',
             },
         },
-        plugins: ['~/plugins/axios.js', { src: '~/plugins/auth.js', mode: 'client' }],
+        plugins: ['~/plugins/axios.js', '~/plugins/auth.js'],
     },
 }

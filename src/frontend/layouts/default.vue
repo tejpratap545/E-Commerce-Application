@@ -12,15 +12,7 @@
 </template>
 
 <script>
-import Appbar from '~/components/Appbar.vue'
-import Footer from '~/components/Footer.vue'
-import Snackbar from '~/components/Snackbar.vue'
-
 export default {
-  components: {
-    Appbar,
-    Footer,
-    Snackbar,
-  },
+  components: {},
 }
 </script>

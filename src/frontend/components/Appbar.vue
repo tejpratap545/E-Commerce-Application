@@ -37,11 +37,15 @@
       <v-menu transition="slide-y-transition" offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="primary" dark v-bind="attrs" v-on="on">
-            My Account
+            {{
+              $auth.loggedIn
+                ? `Welcome, ${$auth.user.user.first_name}`
+                : 'MY ACCOUNT'
+            }}
           </v-btn>
         </template>
 
-        <v-list class="account-menu">
+        <v-list v-if="!$auth.loggedIn" class="account-menu">
           <v-list-item>
             <NLink to="/signin">
               <v-list-item-title>Sign In</v-list-item-title>
@@ -54,13 +58,13 @@
           </v-list-item>
         </v-list>
 
-        <v-list class="account-menu">
-           <v-list-item>
+        <v-list v-else class="account-menu">
+          <v-list-item>
             <NLink to="/profile">
-              <v-list-item-title>Profile</v-list-item-title>
+              <v-list-item-title>My Profile</v-list-item-title>
             </NLink>
           </v-list-item>
-           <v-list-item>
+          <v-list-item>
             <NLink to="/signout">
               <v-list-item-title>Sign Out</v-list-item-title>
             </NLink>

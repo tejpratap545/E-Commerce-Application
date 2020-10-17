@@ -4,7 +4,7 @@
       <v-card>
         <v-card-title class=""> Login to shopIt </v-card-title>
         <v-card-text class="my-0 py-o">
-          <v-form ref="form" v-model="valid" class="pa-3" lazy-validationm>
+          <v-form lass="pa-3" lazy-validationm>
             <v-row class="pa-0 ma-0 justify-center">
               <v-col class="ma-0 pa-0">
                 <v-text-field
@@ -41,6 +41,7 @@
 <script>
 import { logout, signIn } from '~/plugins/auth'
 export default {
+  middleware: 'auth-true',
   data() {
     return { username: '', show_password: false, password: '' }
   },

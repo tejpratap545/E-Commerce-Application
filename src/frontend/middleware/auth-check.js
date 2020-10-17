@@ -1,4 +1,4 @@
-export default async function ({ $auth, route, redirect, store }) {
+export default function ({ $auth, route, redirect, store }) {
     if (!$auth.loggedIn) {
         const REDIRECT_URL = '/signin?redirect=' + route.path
         store.commit('notifier/showMessage', {

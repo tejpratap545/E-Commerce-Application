@@ -27,7 +27,7 @@ if __name__ == "__main__":
         raise
 
     # This allows easy placement of apps within the interior
-    # django_docker_pycharm directory.
+
     current_path = Path(__file__).parent.resolve()
     sys.path.append(str(current_path / "backend"))
 
