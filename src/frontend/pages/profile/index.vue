@@ -9,6 +9,7 @@
             <v-img
               class="profile-picture"
               src="http://cdn.libravatar.org/avatar/40f8d096a3777232204cb3f796c577b7?s=100"
+              rounded
             ></v-img>
 
             <v-card-title
