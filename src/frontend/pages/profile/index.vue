@@ -9,15 +9,30 @@
             <v-img
               class="profile-picture"
               src="http://cdn.libravatar.org/avatar/40f8d096a3777232204cb3f796c577b7?s=100"
+              rounded
             ></v-img>
 
             <v-card-title
               >{{ $auth.user.user.first_name }}
               {{ $auth.user.user.last_name }}
 
-              <v-chip v-if="$auth.user.user.is_admin">admin</v-chip>
+              <v-chip v-if="$auth.user.user.is_admin" class="#27D">admin</v-chip>
+              <v-chip v-else>common</v-chip>
             </v-card-title>
           </v-card>
+    
+          <v-card v-if="$auth.user.user.is_email_verified">
+            <v-card-title>
+              Please verify your email
+            </v-card-title>
+
+            <NLink to="/profile">
+              <v-btn color="primary" dark>
+                  Resent Verification Email
+              </v-btn>
+            </NLink>
+          </v-card>
+
         </v-col>
         <v-col class="col-md-8">
           <h2>My Orders</h2>
@@ -27,7 +42,6 @@
             <v-list-item v-for="order in orders" :key="order.title">
               <v-sheet
                 width="100%"
-                color="white"
                 class="mt-3 mb-3 pa-2"
                 rounded
               >
