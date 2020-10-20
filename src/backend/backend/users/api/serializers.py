@@ -5,8 +5,12 @@ from rest_framework import serializers, status
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
+    USER_TYPE = (("C", "CUSTOMER"), ("S", "SELLER"))
     password = serializers.CharField(
         max_length=16, min_length=settings.MIN_PASSWORD_LENGTH, write_only=True
+    )
+    user_type = serializers.ChoiceField(
+        choices=USER_TYPE, write_only=True, required=False, default="C"
     )
 
     class Meta:
@@ -20,6 +24,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
             "password",
             "date_of_birth",
             "avatar",
+            "user_type",
         ]
 
         def validate(self, data):
@@ -35,6 +40,13 @@ class UserSignupSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         password = validated_data.pop("password", "")
         return super().update(instance, validated_data)
+
+    def create(self, validated_data):
+        user_type = validated_data.pop("user_type", "")
+        if user_type == "S":
+            return User.objects.create_seller_user(**validated_data)
+
+        return User.objects.create_customer_user(**validated_data)
 
 
 class PasswordChangeSerializer(serializers.Serializer):

@@ -6,14 +6,8 @@ from backend.users.api.serializers import (
     UserSerializers,
     UserSignupSerializer,
 )
-from backend.users.models import (
-    BillingAddress,
-    PasswordTooWeakError,
-    Profile,
-    ShippingAddress,
-    User,
-)
-from backend.users.permissions import IsOwner, OwnerProfile
+from backend.users.models import BillingAddress, PasswordTooWeakError, Profile, ShippingAddress, User
+from backend.users.permissions import IsOwner, IsOwnerProfile
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
@@ -28,13 +22,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-class SignUpUserView(
-    CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericAPIView
-):
+class SignUpUserView(CreateModelMixin, GenericAPIView):
     serializer_class = UserSignupSerializer
 
     def post(self, request, *args, **kwargs):
-        return self.create(request)
+        return self.create(request, *args, **kwargs)
 
 
 class UserUpdateView(UpdateModelMixin, GenericAPIView):
@@ -122,7 +114,7 @@ class BillingAddressViewSet(
     viewsets.GenericViewSet,
 ):
     serializer_class = BillingAddressSerializers
-    permission_classes = [OwnerProfile]
+    permission_classes = [IsOwnerProfile]
     queryset = BillingAddress.objects.all()
 
 
@@ -134,5 +126,5 @@ class ShippingAddressViewSet(
     viewsets.GenericViewSet,
 ):
     serializer_class = ShippingAddressSerializers
-    permission_classes = [OwnerProfile]
+    permission_classes = [IsOwnerProfile]
     queryset = ShippingAddress.objects.all()
