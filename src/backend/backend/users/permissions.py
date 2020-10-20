@@ -1,3 +1,5 @@
+from backend.users.models import Profile
+from django.db.models import Q
 from rest_framework import permissions
 
 
@@ -15,3 +17,8 @@ class IsCustomer(permissions.BasePermission):
 class IsSeller(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_admin
+
+
+class OwnerProfile(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.profile_set.get().user.email==request.user.email

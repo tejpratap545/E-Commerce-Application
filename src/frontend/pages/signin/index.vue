@@ -1,6 +1,5 @@
 <template>
   <v-row class="justify-center">
-    {{ $config }}
     <v-col cols="10" md="4">
       <v-card>
         <v-card-title class=""> Login to shopIt </v-card-title>

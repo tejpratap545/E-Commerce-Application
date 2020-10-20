@@ -1,19 +1,29 @@
 from backend.users.api.serializers import (
     BillingAddressSerializers,
-    CustomUserSignUpSerializer,
     PasswordChangeSerializer,
-    SellerUserSignUpSerializers,
     ShippingAddressSerializers,
     UserProfileSerializers,
     UserSerializers,
     UserSignupSerializer,
 )
-from backend.users.models import BillingAddress, PasswordTooWeakError, Profile, ShippingAddress, User
-from backend.users.permissions import IsOwner
+from backend.users.models import (
+    BillingAddress,
+    PasswordTooWeakError,
+    Profile,
+    ShippingAddress,
+    User,
+)
+from backend.users.permissions import IsOwner, OwnerProfile
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import (
+    CreateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -21,44 +31,27 @@ from rest_framework.views import APIView
 class SignUpUserView(
     CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericAPIView
 ):
-    def get_serializer_class(self):
-        user_type = self.request.data.get("user_type", "customer")
-        return (
-            SellerUserSignUpSerializers
-            if user_type == "seller"
-            else CustomUserSignUpSerializer
-        )
+    serializer_class = UserSignupSerializer
 
     def post(self, request, *args, **kwargs):
         return self.create(request)
 
 
-class UserView(RetrieveModelMixin, UpdateModelMixin, GenericAPIView):
+class UserUpdateView(UpdateModelMixin, GenericAPIView):
     serializer_class = UserSignupSerializer
     permission_classes = [IsOwner]
-    queryset = User.objects.all()
-    lookup_field = "id"
 
-    def get_serializer_class(self):
-        user_type = self.request.data.get("user_type", "customer")
-        if user_type == "admin":
-            pass
-        elif user_type == "seller":
-            return CustomUserSignUpSerializer
-        else:
-            return SellerUserSignUpSerializers
+    def get_object(self):
+        return self.request.user
 
-    def get(self, request, id=None):
-        return self.retrieve(request, id)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
-    def put(self, request, id=None, *args, **kwargs):
-        return self.update(request, id=id)
-
-    def patch(self, request, id=None):
-        return self.partial_update(request, id=id)
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 
-class PasswordChangeView(APIView):
+class PasswordChangeView(CreateModelMixin, GenericAPIView):
     permission_classes = [IsOwner]
     serializer_class = PasswordChangeSerializer
 
@@ -110,11 +103,36 @@ def check_contact_number(request):
     return Response(data="This contact number is available", status=status.HTTP_200_OK)
 
 
-class ProfileView(APIView):
+class ProfileView(RetrieveModelMixin, GenericAPIView):
 
     permission_classes = [IsOwner]
+    serializer_class = UserProfileSerializers
 
     def get(self, request, format=None):
         profile = Profile.objects.filter(user=self.request.user)
         serializer = UserProfileSerializers(profile, many=True)
         return Response(serializer.data)
+
+
+class BillingAddressViewSet(
+    RetrieveModelMixin,
+    UpdateModelMixin,
+    CreateModelMixin,
+    DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = BillingAddressSerializers
+    permission_classes = [OwnerProfile]
+    queryset = BillingAddress.objects.all()
+
+
+class ShippingAddressViewSet(
+    RetrieveModelMixin,
+    UpdateModelMixin,
+    CreateModelMixin,
+    DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = ShippingAddressSerializers
+    permission_classes = [OwnerProfile]
+    queryset = ShippingAddress.objects.all()

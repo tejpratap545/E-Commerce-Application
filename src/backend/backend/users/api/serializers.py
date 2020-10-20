@@ -37,24 +37,6 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class CustomUserSignUpSerializer(UserSignupSerializer):
-    class Meta:
-        model = User
-        fields = UserSignupSerializer.Meta.fields
-
-    def create(self, validated_data):
-        return User.objects.create_customer_user(**validated_data)
-
-
-class SellerUserSignUpSerializers(UserSignupSerializer):
-    class Meta:
-        model = User
-        fields = UserSignupSerializer.Meta.fields
-
-    def create(self, validated_data):
-        return User.objects.create_seller_user(**validated_data)
-
-
 class PasswordChangeSerializer(serializers.Serializer):
 
     password1 = serializers.CharField(
@@ -109,11 +91,23 @@ class ShippingAddressSerializers(serializers.ModelSerializer):
         model = ShippingAddress
         fields = "__all__"
 
+    def create(self, validated_data):
+
+        return Profile.objects.get(
+            user=self.context["request"].user
+        ).shipping_address.create(**validated_data)
+
 
 class BillingAddressSerializers(serializers.ModelSerializer):
     class Meta:
         model = BillingAddress
         fields = "__all__"
+
+    def create(self, validated_data):
+
+        return Profile.objects.get(
+            user=self.context["request"].user
+        ).billing_address.create(**validated_data)
 
 
 class UserProfileSerializers(serializers.ModelSerializer):

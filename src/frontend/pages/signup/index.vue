@@ -141,7 +141,7 @@ export default {
     async createAccount() {
       logout(this.$auth, this.$axios)
       await this.$axios
-        .$post('user/signup', {
+        .$post('user/signup/', {
           email: this.email,
           contact_number: this.contactNumber,
           first_name: this.firstName,
