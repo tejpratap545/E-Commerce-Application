@@ -60,6 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
 
     is_email_verified = models.BooleanField(default=False)
+    md5_hash = models.CharField(max_length=100, blank=True, null=True)
 
     @property
     def is_staff(self):

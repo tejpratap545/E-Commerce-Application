@@ -2,6 +2,56 @@
 
 ## Build Setup
 
+## Using docker and docker compose ( run these command at root of the project )
+
+```bash
+
+# create .env file at src/backend
+  PYTHONUNBUFFERED=1
+  DEBUG=True
+  SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=
+  SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=
+  SOCIAL_AUTH_FACEBOOK_KEY=
+  SOCIAL_AUTH_FACEBOOK_SECRET=
+  DATABASE_URL=psql://shopit:shopit@postgres:5432/shopitdb
+  DJANGO_ALLOWED_HOSTS=127.0.0.1,0.0.0.0,192,168.43.229,34.229.131.219
+  AZURE_ACCOUNT_NAME=
+  AZURE_ACCOUNT_KEY=
+  SENDGRID_API_KEY=
+  SENDGRID_USER_NAME=
+  SENTRY_DSN=
+  RABBITMQ_URL=amqp://shopit:shopit@rabbitmqasgi
+  CELERY_BROKER_URL=amqp://shopit:shopit@rabbitmq:5672//
+  REDIS_URL=redis://127.0.0.1:6379/1
+  STRIPE_PUBLISHABLE_KEY=
+  STRIPE_SECRET_KEY=
+  OPEN_EXCHANGE_RATES_APP_ID=
+
+
+# build container and compose up
+$ docker-compose -f local.yml up
+
+# run docker containers in background mode
+
+$ docker-compose -f local.yml up -d
+
+# start celery worker and beat
+# not necessary for frontend devlopement
+
+$ docker-compose -f local.yml run django celery -A config.celery_app worker -l INFO
+$ docker-compose -f local.yml run django beat -A config.celery_app worker -l INFO
+$ docker-compose -f local.yml run django beat -A flower --app=config.celery_app --basic_auth="username:password"
+
+
+# db backup and restore
+$ docker exec -i postgres pg_dump -U shopit shopitdb --exclude-table=django_migrations > src/backend/dbbackup/db_dump_$(date +%Y-%h-%d"_"%H_%M_%S).sql
+
+$ cat src/backend/dbbackup/latest_dump_file.sql | docker exec -i postgres psql -U shopit shopitdb
+
+```
+
+## Manual Build Setup
+
 ### 1. Must install rabbitmq, postgresql , redis, mailhog
 
 #### If not install create docker-compose.yml  file anywhere with this content
@@ -60,7 +110,7 @@
 
     cd ../..
     python3 -m venv venv
-    source venv/bin/activate   # for linux and mac users  
+    source venv/bin/activate   # for linux and mac users
     source venv/Script/activate # for windows users
 
 ### 3. Install python requirements
@@ -76,7 +126,7 @@
     SOCIAL_AUTH_FACEBOOK_KEY=
     SOCIAL_AUTH_FACEBOOK_SECRET=
     DATABASE_URL=psql://username:password@127.0.0.1:5432/dname
-    ALLOWD_HOSTS=['127.0.0.1','0.0.0.0','localhost]
+    ALLOWD_HOSTS='127.0.0.1','0.0.0.0','localhost
     AZURE_ACCOUNT_NAME=
     AZURE_ACCOUNT_KEY=
     SENDGRID_API_KEY=

@@ -1,5 +1,6 @@
 <template>
   <v-row class="justify-center">
+    {{ $config }}
     <v-col cols="10" md="4">
       <v-card>
         <v-card-title class=""> Login to shopIt </v-card-title>
@@ -16,6 +17,7 @@
                 ></v-text-field>
               </v-col>
             </v-row>
+
             <v-row>
               <v-col>
                 <v-text-field

@@ -94,6 +94,7 @@ class UserSerializers(serializers.ModelSerializer):
             "last_name",
             "date_of_birth",
             "avatar",
+            "md5_hash",
             "is_active",
             "is_admin",
             "is_email_verified",

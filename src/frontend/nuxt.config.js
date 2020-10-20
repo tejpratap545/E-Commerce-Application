@@ -76,10 +76,11 @@ export default {
     // env variable https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config/
     publicRuntimeConfig: {
         apiBaseURL: process.env.API_BASE_URL || 'http://localhost:8000/api/',
+    },
+    privateRuntimeConfig: {
         djangoClientId: process.env.DJANGO_CLIENT_ID || '',
         djangoClientSecret: process.env.DJANGO_CLIENT_SC || '',
     },
-    privateRuntimeConfig: {},
     auth: {
         localStorage: false,
         cookie: {

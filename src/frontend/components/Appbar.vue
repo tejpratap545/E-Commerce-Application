@@ -65,8 +65,8 @@
             </NLink>
           </v-list-item>
           <v-list-item>
-            <NLink to="/signout">
-              <v-list-item-title>Sign Out</v-list-item-title>
+            <NLink to="/">
+              <v-list-item-title @click="logout">Sign Out</v-list-item-title>
             </NLink>
           </v-list-item>
         </v-list>
@@ -75,6 +75,7 @@
   </div>
 </template>
 <script>
+import { logout } from '~/plugins/auth'
 export default {
   props: {
     source: String,
@@ -88,6 +89,16 @@ export default {
       { title: 'Home electronics' },
     ],
   }),
+  methods: {
+    logout() {
+      logout(this.$auth, this.$axios).then(() => {
+        this.$notifier.showMessage({
+          content: `You have successfully logout`,
+          color: 'info',
+        })
+      })
+    },
+  },
 }
 </script>
 

@@ -7,3 +7,7 @@ from django.dispatch import receiver
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+        from libgravatar import md5_hash
+
+        instance.md5_hash = md5_hash(instance.email)
+        instance.save()

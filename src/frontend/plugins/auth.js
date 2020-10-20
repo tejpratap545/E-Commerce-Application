@@ -4,10 +4,10 @@ const strategy = 'local'
 const FALLBACK_INTERVAL = 86400 * 1000
 
 export function logout($auth, $axios) {
-    $auth.logout()
     $auth.setToken(false)
     $auth.setRefreshToken(false)
     $axios.setHeader('Authorization', false)
+    $auth.logout()
 }
 async function refreshTokenF($auth, $axios, $config, token, refreshToken) {
     if (token && refreshToken) {
