@@ -45,7 +45,7 @@ export default {
     plugins: ['@/plugins/countryCode', '~/plugins/notifier.js'],
     // Axios module configuration (https://go.nuxtjs.dev/config-axios)
     axios: {
-        baseURL: process.env.API_BASE_URL || 'http://localhost:8000/api/',
+        baseURL: 'http://3.238.85.35:8000/api/',
     },
 
     // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
@@ -76,11 +76,10 @@ export default {
     // env variable https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config/
     publicRuntimeConfig: {
         apiBaseURL: process.env.API_BASE_URL || 'http://localhost:8000/api/',
-    },
-    privateRuntimeConfig: {
         djangoClientId: process.env.DJANGO_CLIENT_ID || '',
         djangoClientSecret: process.env.DJANGO_CLIENT_SC || '',
     },
+    privateRuntimeConfig: {},
     auth: {
         localStorage: false,
         cookie: {
