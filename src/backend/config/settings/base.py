@@ -240,9 +240,6 @@ MIDDLEWARE = [
 STATIC_LOCATION = "static"
 MEDIA_LOCATION = "media"
 
-STATIC_ROOT = str(ROOT_DIR / "staticfiles")
-STATICFILES_DIRS = [str(APPS_DIR / "static")]
-
 MEDIA_ROOT = str(APPS_DIR / "media")
 
 # azure storage

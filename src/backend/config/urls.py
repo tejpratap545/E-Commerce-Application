@@ -29,13 +29,14 @@ urlpatterns = [
 ]
 
 
+
 schema_view = get_schema_view(
     openapi.Info(
         title="The E-Commerce-Web-Application API",
         default_version="v1",
-        description="Test description",
+        description="api for -Commerce-Web-Application application build with django and django rest framework",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="Tejpratapsingh545@outlook.com"),
+        contact=openapi.Contact(email="contact@shopit.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
