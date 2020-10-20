@@ -2,7 +2,7 @@
 
 ## Build Setup
 
-## Using docker and docker compose ( run these command at root of the project )
+## Using docker and docker compose ( run these command at the root of project )
 
 ```bash
 
