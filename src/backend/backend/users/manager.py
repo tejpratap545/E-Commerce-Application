@@ -29,6 +29,8 @@ class UserManager(BaseUserManager):
     def create_admin_user(self, email, contact_number, password=None, *args, **kwargs):
         user = self.create_user(email, contact_number, password, *args, **kwargs)
         user.is_admin = True
+        user.is_admin = False
+        user.is_superuser = False
         user.save(using=self._db)
         return user
 
@@ -37,11 +39,15 @@ class UserManager(BaseUserManager):
     ):
         user = self.create_user(email, contact_number, password, *args, **kwargs)
         user.is_customer = True
+        user.is_admin = False
+        user.is_superuser = False
         user.save(using=self._db)
         return user
 
     def create_seller_user(self, email, contact_number, password=None, *args, **kwargs):
         user = self.create_user(email, contact_number, password, *args, **kwargs)
         user.is_seller = True
+        user.is_admin = False
+        user.is_superuser = False
         user.save(using=self._db)
         return user

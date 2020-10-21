@@ -1,7 +1,10 @@
-from backend.users.models import BillingAddress, Profile, ShippingAddress, User
+from backend.users.models import BillingAddress, PasswordReset, Profile, ShippingAddress, User
 from django.conf import settings
 from django.db.models import Q
 from rest_framework import serializers, status
+from rest_framework.exceptions import NotFound
+
+import secrets
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
@@ -136,3 +139,91 @@ class UserProfileSerializers(serializers.ModelSerializer):
             "default_shipping_address",
             "default_purchasing_address",
         ]
+
+
+class PasswordResetSendSerializers(serializers.Serializer):
+    username = serializers.CharField(max_length=25, write_only=True)
+
+    def create(self, validated_data):
+        username = validated_data.pop("username")
+
+        user = User.objects.get(Q(email=username) | Q(contact_number=username))
+        # delete all previous links if they exists
+        PasswordReset.objects.filter(user=user).delete()
+        # create new password reset token
+        return PasswordReset.objects.create(user=user)
+
+    def validate_username(self, value):
+        if (
+            User.objects.only("email", "contact_number")
+            .filter(Q(email=value) | Q(contact_number=value))
+            .exists()
+        ):
+            return value
+        raise serializers.ValidationError("User does not exits")
+
+
+class PasswordResetVerifySerializers(serializers.ModelSerializer):
+    token_id = serializers.UUIDField(write_only=True)
+    url_token = serializers.CharField(max_length=250, write_only=True)
+
+    class Meta:
+        model = PasswordReset
+        fields = ["url_token", "success_token", "token_id"]
+
+    def validate(self, data):
+        if (
+            PasswordReset.objects.only("id", "url_token")
+            .filter(Q(id=data["token_id"]) & Q(url_token=data["url_token"]))
+            .exists()
+        ):
+            return data
+        raise serializers.ValidationError("Token is not validate")
+
+    def create(self, validated_data):
+        token = PasswordReset.objects.only("id", "url_token").get(
+            Q(id=validated_data["token_id"]) & Q(url_token=validated_data["url_token"])
+        )
+        token.success_token = secrets.token_hex()
+        token.save()
+        return token
+
+
+class PasswordResetDoneSerializers(serializers.ModelSerializer):
+    token_id = serializers.UUIDField(write_only=True)
+    success_token = serializers.CharField(max_length=250, write_only=True)
+    password1 = serializers.CharField(
+        max_length=16,
+        min_length=settings.MIN_PASSWORD_LENGTH,
+        write_only=True,
+        required=True,
+    )
+    password2 = serializers.CharField(
+        max_length=16,
+        min_length=settings.MIN_PASSWORD_LENGTH,
+        write_only=True,
+        required=True,
+    )
+
+    class Meta:
+        model = PasswordReset
+        fields = ["token_id", "success_token", "password1", "password2"]
+
+    def validate(self, data):
+        if data["password1"] != data["password2"]:
+            raise serializers.ValidationError("Both Password must be same")
+
+        if (
+            PasswordReset.objects.only("id", "success_token")
+            .filter(Q(id=data["token_id"]) & Q(success_token=data["success_token"]))
+            .exists()
+        ):
+            return data
+        raise serializers.ValidationError("Not valid token ")
+
+    def create(self, validated_data):
+        user = PasswordReset.objects.get(id=validated_data["token_id"]).user
+        user.set_password(validated_data["password2"])
+
+        PasswordReset.objects.get(id=validated_data["token_id"]).delete()
+        return True

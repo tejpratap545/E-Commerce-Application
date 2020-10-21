@@ -75,3 +75,5 @@ class TokenView(TokenView):
             return Response(
                 data="Invalid grant type request", status=status.HTTP_404_NOT_FOUND
             )
+
+

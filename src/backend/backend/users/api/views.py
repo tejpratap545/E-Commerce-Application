@@ -1,15 +1,26 @@
 from backend.users.api.serializers import (
     BillingAddressSerializers,
     PasswordChangeSerializer,
+    PasswordResetDoneSerializers,
+    PasswordResetSendSerializers,
+    PasswordResetVerifySerializers,
     ShippingAddressSerializers,
     UserProfileSerializers,
     UserSerializers,
     UserSignupSerializer,
 )
-from backend.users.models import BillingAddress, PasswordTooWeakError, Profile, ShippingAddress, User
+from backend.users.models import (
+    BillingAddress,
+    EmailConfirmation,
+    PasswordTooWeakError,
+    Profile,
+    ShippingAddress,
+    User,
+)
 from backend.users.permissions import IsOwner, IsOwnerProfile
+from django.db.models import Q
 from rest_framework import mixins, status, viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -18,6 +29,7 @@ from rest_framework.mixins import (
     RetrieveModelMixin,
     UpdateModelMixin,
 )
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -128,3 +140,73 @@ class ShippingAddressViewSet(
     serializer_class = ShippingAddressSerializers
     permission_classes = [IsOwnerProfile]
     queryset = ShippingAddress.objects.all()
+
+
+class PasswordResetSend(CreateModelMixin, GenericAPIView):
+    serializer_class = PasswordResetSendSerializers
+
+    def post(self, request, *args, **kwargs):
+        self.create(request, *args, **kwargs)
+        return Response(
+            status=status.HTTP_205_RESET_CONTENT,
+            data={
+                "msg": "Verification email is successfully send to your email address . Thank You"
+            },
+        )
+
+
+class PasswordResetConfirm(CreateModelMixin, GenericAPIView):
+    serializer_class = PasswordResetVerifySerializers
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+class PasswordChangeDone(CreateModelMixin, GenericAPIView):
+    serializer_class = PasswordResetDoneSerializers
+
+    def post(self, request, *args, **kwargs):
+        self.create(request, *args, **kwargs)
+        return Response(
+            status=status.HTTP_205_RESET_CONTENT,
+            data={"msg": "Your password is successfully changed . Thank You"},
+        )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def confirmation_email_send(request):
+
+    if request.user.is_email_verified:
+        return Response(
+            status=status.HTTP_208_ALREADY_REPORTED,
+            data={"msg": "Your email is already verified"},
+        )
+
+    else:
+        EmailConfirmation.objects.create(user=request.user)
+        return Response(
+            status=status.HTTP_200_OK,
+            data={
+                "msg": "Email verification link is successfully send to your email address please verify your "
+                "email  address."
+            },
+        )
+
+
+@api_view(["POST"])
+def confirmation_email_verify(request):
+    try:
+        user = EmailConfirmation.objects.get(
+            Q(id=request.data["token_id"]) & Q(token=request.data["token"])
+        ).user
+        user.is_email_verified = True
+        user.save()
+
+        return Response(
+            status=status.HTTP_200_OK, data={"msg": "Your email is successfully verify"}
+        )
+    except EmailConfirmation.DoesNotExist:
+        return Response(
+            status=status.HTTP_404_NOT_FOUND, data={"msg": "Token is not found "}
+        )

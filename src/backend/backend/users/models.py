@@ -7,6 +7,9 @@ from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
 from typing import Optional
 
+import secrets
+import uuid as uuid
+
 
 class AbstractAddress(models.Model):
     room = models.IntegerField(blank=True, null=True)
@@ -101,3 +104,33 @@ class Profile(models.Model):
     default_purchasing_address = models.PositiveSmallIntegerField(default=0)
     shipping_address = models.ManyToManyField(ShippingAddress)
     billing_address = models.ManyToManyField(BillingAddress)
+
+    def __str__(self):
+        return self.user.email
+
+
+class EmailConfirmation(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    token = models.CharField(
+        max_length=250, default=secrets.token_urlsafe(), editable=False
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.email
+
+
+class PasswordReset(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    url_token = models.CharField(
+        max_length=250, default=secrets.token_urlsafe(), editable=False
+    )
+    success_token = models.CharField(
+        max_length=250, blank=True, null=True, editable=False
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.email

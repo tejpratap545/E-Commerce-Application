@@ -5,7 +5,6 @@ from rest_framework import permissions
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-
         return obj.email == request.user.email
 
 
@@ -21,4 +20,4 @@ class IsSeller(permissions.BasePermission):
 
 class IsOwnerProfile(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj.profile_set.get().user.email==request.user.email
+        return obj.profile_set.get().user.email == request.user.email
