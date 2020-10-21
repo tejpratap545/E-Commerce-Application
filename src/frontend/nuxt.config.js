@@ -45,7 +45,7 @@ export default {
     plugins: ['@/plugins/countryCode', '~/plugins/notifier.js'],
     // Axios module configuration (https://go.nuxtjs.dev/config-axios)
     axios: {
-        baseURL: 'http://3.238.85.35:8000/api/',
+        baseURL: process.env.API_BASE_URL || 'http://localhost:8000/api/',
     },
 
     // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)

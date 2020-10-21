@@ -75,7 +75,7 @@
                   v-model="password"
                   :rules="[rules.passwordMatch]"
                   class="pa-0 ma-0 justify-center"
-                  hint="varify your Password"
+                  hint="verify your Password"
                   label="Enter Your Password"
                   :type="show1 ? 'text' : 'password'"
                   :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"

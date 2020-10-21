@@ -2,7 +2,7 @@
   <v-row class="justify-center">
     <v-col cols="10" md="4">
       <v-card>
-        <v-card-title class=""> Login to shopIt </v-card-title>
+        <v-card-title class=""> SignIn to shopIt </v-card-title>
         <v-card-text class="my-0 py-o">
           <v-form lass="pa-3" lazy-validationm>
             <v-row class="pa-0 ma-0 justify-center">
@@ -30,10 +30,16 @@
                   @click:append="show_password = !show_password"
                 ></v-text-field>
               </v-col>
+            </v-row>
 
-              <v-btn block color="success" @click="logIn"> logIn </v-btn>
+            <v-row class="ma-1 mt-0">
+              <v-btn block color="success" @click="logIn"> signin </v-btn>
             </v-row>
           </v-form>
+          
+          <div class="mt-2">
+            <NLink to="/password/send">Forgot your password ?</NLink>
+          </div>
         </v-card-text>
       </v-card>
     </v-col>
