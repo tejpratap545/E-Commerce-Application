@@ -9,49 +9,119 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 class BrandViewSet(viewsets.ModelViewSet):
 
     queryset = Brand.objects.all()
-    permission_classes = [IsAdminUser]
+
     serializer_class = BrandSerializer
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class FilterValuesViewSet(viewsets.ModelViewSet):
     queryset = FilterValues.objects.all()
-    permission_classes = [IsAdminUser]
+
     serializer_class = FilterValuesSerializers
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class FilterPropertiesViewSet(viewsets.ModelViewSet):
     queryset = FilterProperties.objects.all()
     serializer_class = FilterPropertiesSerializer
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class FilterCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = FilterCategorySerializer
     queryset = FilterCategory.objects.all()
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class MiddlePriceRangeViewSet(viewsets.ModelViewSet):
     queryset = MiddlePriceRange.objects.all()
-    permission_classes = [IsAdminUser]
+
     serializer_class = MiddlePriceRangeSerializers
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class PriceFilterViewSet(viewsets.ModelViewSet):
     queryset = PriceFilterCategory.objects.all()
-    permission_classes = [IsAdminUser]
+
     serializer_class = PriceFilterCategorySerializers
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
-    permission_classes = [IsAdminUser]
+
     serializer_class = CategorySerializer
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
+
     serializer_class = SubCategorySerializers
 
 
@@ -62,11 +132,13 @@ class AnswerViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
-            return [AllowAny]
+            permission_classes = [AllowAny]
         elif self.action == "create":
-            return [IsAuthenticated]
+            permission_classes = [IsAuthenticated]
         else:
-            return [IsCreator]
+            permission_classes = [IsCreator]
+
+        return [permission() for permission in permission_classes]
 
 
 class ProductFAQViewSet(viewsets.ModelViewSet):
@@ -76,11 +148,13 @@ class ProductFAQViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
-            return [AllowAny]
+            permission_classes = [AllowAny]
         elif self.action == "create":
-            return [IsAuthenticated]
+            permission_classes = [IsAuthenticated]
         else:
-            return [IsCreator]
+            permission_classes = [IsCreator]
+
+        return [permission() for permission in permission_classes]
 
 
 class CommentOnReviewViewSet(viewsets.ModelViewSet):
@@ -90,11 +164,13 @@ class CommentOnReviewViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
-            return [AllowAny]
+            permission_classes = [AllowAny]
         elif self.action == "create":
-            return [IsAuthenticated]
+            permission_classes = [IsAuthenticated]
         else:
-            return [IsCreator]
+            permission_classes = [IsCreator]
+
+        return [permission() for permission in permission_classes]
 
 
 class ReportViewSet(viewsets.ModelViewSet):
@@ -104,11 +180,13 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
-            return [AllowAny]
+            permission_classes = [AllowAny]
         elif self.action == "create":
-            return [IsAuthenticated]
+            permission_classes = [IsAuthenticated]
         else:
-            return [IsCreator]
+            permission_classes = [IsCreator]
+
+        return [permission() for permission in permission_classes]
 
 
 class ProductInfoViewSet(viewsets.ModelViewSet):
@@ -118,11 +196,13 @@ class ProductInfoViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
-            return [AllowAny]
+            permission_classes = [AllowAny]
         elif self.action == "create":
-            return [IsSeller]
+            permission_classes = [IsSeller]
         else:
-            return [IsSellerProduct]
+            permission_classes = [IsSellerProduct]
+
+        return [permission() for permission in permission_classes]
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -132,8 +212,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
-            return [AllowAny]
+            permission_classes = [AllowAny]
         elif self.action == "create":
-            return [IsSeller]
+            permission_classes = [IsSeller]
         else:
-            return [IsSellerProduct]
+            permission_classes = [IsSellerProduct]
+        return [permission() for permission in permission_classes]
