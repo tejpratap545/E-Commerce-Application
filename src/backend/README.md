@@ -1,3 +1,4 @@
+
 # Backend For E-commerce-Application
 
 ## Build Setup
@@ -7,12 +8,6 @@
 ```bash
 
 # create .env file at src/backend
-  PYTHONUNBUFFERED=1
-  DEBUG=True
-  SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=
-  SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=
-  SOCIAL_AUTH_FACEBOOK_KEY=
-  SOCIAL_AUTH_FACEBOOK_SECRET=
   DATABASE_URL=psql://shopit:shopit@postgres:5432/shopitdb
   DJANGO_ALLOWED_HOSTS=127.0.0.1,0.0.0.0,192,168.43.229,34.229.131.219
   AZURE_ACCOUNT_NAME=
@@ -29,22 +24,22 @@
 
 
 # build container and compose up
-$ docker-compose -f local.yml up
+$ docker-compose  up
 
 # run docker containers in background mode
 
-$ docker-compose -f local.yml up -d
+$ docker-compose up -d
 
 # start celery worker and beat
 # not necessary for frontend devlopement
 
-$ docker-compose -f local.yml run django celery -A config.celery_app worker -l INFO
-$ docker-compose -f local.yml run django beat -A config.celery_app worker -l INFO
-$ docker-compose -f local.yml run django beat -A flower --app=config.celery_app --basic_auth="username:password"
+$ docker-compose run django celery -A config.celery_app worker -l INFO
+$ docker-compose run django beat -A config.celery_app worker -l INFO
+$ docker-compose run django beat -A flower --app=config.celery_app --basic_auth="username:password"
 
 
 # db backup and restore
-$ docker exec -i postgres pg_dump -U shopit shopitdb --exclude-table=django_migrations > src/backend/dbbackup/db_dump_$(date +%Y-%h-%d"_"%H_%M_%S).sql
+$ docker exec -i postgres pg_dump -U shopit shopitdb -a > src/backend/dbbackup/dbdump-$(uname -n)_$(date +%F-%T).psql
 
 $ cat src/backend/dbbackup/latest_dump_file.sql | docker exec -i postgres psql -U shopit shopitdb
 
@@ -157,12 +152,12 @@ $ cat src/backend/dbbackup/latest_dump_file.sql | docker exec -i postgres psql -
 
 #### Without docker
 
-    pg_dump -U dbusername dbname --exclude-table=django_migrations > dbbackup/db_dump_$(date +%Y-%h-%d"_"%H_%M_%S).sql
-    cat dbbackup/latest_dump_file.sql | psql -U username dbname
+    pg_dump -U dbusername  -a dbname > dbbackup/dbdump-$(uname -n)_$(date +%F-%T).psql
+    cat dbbackup/latest_dump_file.sql  
 
 #### If database is running inside the container
 
-     docker exec -i your-db-container pg_dump -U dbusername dbname --exclude-table=django_migrations > dbbackup/db_dump_$(date +%Y-%h-%d"_"%H_%M_%S).sql
+     docker exec -i your-db-container pg_dump -U dbusername  -a dbname > dbbackup/dbdump-$(uname -n)_$(date +%F-%T).psql
      cat dbbackup/latest_dump_file.sql | docker exec -i your-db-container psql -U username dbname
 
 ### Default Servers locations

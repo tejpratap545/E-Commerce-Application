@@ -12,7 +12,7 @@ export function logout($auth, $axios) {
 async function refreshTokenF($auth, $axios, $config, token, refreshToken) {
     if (token && refreshToken) {
         try {
-            const response = await $axios.post('auth/token', {
+            const response = await $axios.post('auth/token/', {
                 grant_type: 'refresh_token',
                 refresh_token: refreshToken,
                 client_id: $config.djangoClientId,
@@ -33,7 +33,7 @@ async function refreshTokenF($auth, $axios, $config, token, refreshToken) {
 }
 
 export async function signIn($axios, $auth, store, data) {
-    await $axios.$post('auth/token', data).then((res) => {
+    await $axios.$post('auth/token/', data).then((res) => {
         $auth.setToken('local', 'Bearer password ' + res.access_token)
         $auth.$storage.setUniversal('logInDate', new Date())
         $auth.setRefreshToken('local', res.refresh_token)

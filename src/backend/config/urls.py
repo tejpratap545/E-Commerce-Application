@@ -17,12 +17,9 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import include
 from django.contrib import admin
+from django.http import HttpResponse
 from django.urls import path
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularRedocView,
-    SpectacularSwaggerView,
-)
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from rest_framework.schemas import get_schema_view as drf_shema
 
 
@@ -51,6 +48,11 @@ urlpatterns += [
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
 
+
+def version(request):
+    return HttpResponse("v1")
+
+
 urlpatterns += [
     # authentication and token generators views
     path("api/", include("config.api_routers")),
@@ -58,6 +60,7 @@ urlpatterns += [
     path(
         "favicon.ico", RedirectView.as_view(url=staticfiles_storage.url("shopit.png"))
     ),
+    path("api/api/v1/version", version),
 ]
 if settings.DEBUG:
     import debug_toolbar
@@ -65,20 +68,3 @@ if settings.DEBUG:
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),
     ]
-
-urlpatterns += [
-    # ...
-    # Use the `get_schema_view()` helper to add a `SchemaView` to project URLs.
-    #   * `title` and `description` parameters are passed to `SchemaGenerator`.
-    #   * Provide view name for use with `reverse()`.
-    path(
-        "openapi",
-        drf_shema(
-            title="E-commerce-Wen application api",
-            description="API for all things …",
-            url="http://127.0.0.1:8000",
-            version="1.0.0",
-        ),
-        name="openapi-schema",
-    ),
-]

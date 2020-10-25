@@ -16,21 +16,23 @@ services:
       - rabbitmqdata:/var/lib/rabbitmq/
       - rabbitmqlogs:/var/log/rabbitmq/
     environment:
-    - RABBITMQ_DEFAULT_USER=shopit
-    - RABBITMQ_DEFAULT_PASS=shopit
+      RABBITMQ_DEFAULT_USER: shopit
+      RABBITMQ_DEFAULT_PASS: shopit
     ports:
       - 5672:5672
       - 15672:15672
 
-  # postgres:
-  #   image: postgres
-  #   container_name: postgres
-  #   volumes:
-  #   - pgdata:/var/lib/postgresql/data
-  #   environment:
-  #   - POSTGRES_PASSWORD=shopit
-  #   ports:
-  #   - 5432:5432
+  postgres:
+    image: postgres
+    container_name: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: shopit
+      POSTGRES_DB: shopitdb
+      POSTGRES_USER: shopit
+    ports:
+      - 5432:5432
 
   mailhog:
     image: mailhog/mailhog:latest
@@ -46,6 +48,7 @@ services:
     image: shopit_django_local_image
     container_name: django
     depends_on:
+      - postgres
       - mailhog
       - rabbitmq
     volumes:
@@ -56,7 +59,4 @@ services:
       - 8000:8000
       - 5555:5555
     command: /start
-
-
-
 

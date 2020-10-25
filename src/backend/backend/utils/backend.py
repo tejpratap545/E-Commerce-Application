@@ -50,7 +50,9 @@ def generate_payload(
 def encode_token(token, token_type, token_expiry, token_provider):
     algorithm = "RS256"
 
-    private_key = settings.JWT_PRIVATE_KEY_ONEISSUER
+    with open("jwt-pri.key") as f:
+        private_key = f.read()
+
     if not private_key:
         raise ImproperlyConfigured("Missing setting private key")
     payload = generate_payload(
@@ -68,11 +70,12 @@ def decode_jwt(jwt_value):
         raise jwt.InvalidTokenError()
 
     payload_enc += "=" * (-len(payload_enc) % 4)  # add padding
-    payload = json.loads(base64.b64decode(payload_enc).decode("utf-8"))
 
     algorithms = "RS256"
 
-    public_key = settings.JWT_PUBLIC_KEY_ONEISSUER
+    with open("jwt-pub.key") as f:
+        public_key = f.read()
+
     if not public_key:
         raise ImproperlyConfigured("Missing setting  pubic key")
 

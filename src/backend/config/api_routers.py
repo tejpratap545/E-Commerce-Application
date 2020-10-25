@@ -38,5 +38,5 @@ router.register("product/review", ReportViewSet)
 router.register("product/review/comments", CommentOnReviewViewSet)
 
 
-app_name = "api"
+app_name = "shopit"
 urlpatterns = router.urls

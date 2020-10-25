@@ -144,7 +144,7 @@ class Seller(models.Model):
         ShippingAddress, on_delete=models.SET_NULL, null=True
     )
     billing_address = models.ManyToManyField(BillingAddress)
-    tags = ArrayField(models.TextField())
+    tags = ArrayField(models.TextField(), null=True)
 
     def __str__(self):
         return self.name
