@@ -126,7 +126,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 
 
 class AnswerViewSet(viewsets.ModelViewSet):
-    queryset = Answer.objects.all()
+    queryset = ProductFAQAnswer.objects.all()
 
     serializer_class = AnswerSerializers
 

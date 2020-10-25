@@ -73,8 +73,13 @@ THIRD_PARTY_APPS = [
     "djmoney.contrib.exchange",
     "dbbackup",
     "drf_spectacular",
+    "django_better_admin_arrayfield",
+    "jsoneditor",
 ]
-
+JSON_EDITOR_JS = "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/8.6.4/jsoneditor.js"
+JSON_EDITOR_CSS = (
+    "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/8.6.4/jsoneditor.css"
+)
 LOCAL_APPS = [
     "backend.users.apps.UsersConfig",
     "backend.shopit.apps.ProductsConfig",
@@ -245,7 +250,9 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-
+#
+# DBBACKUP_STORAGE = DEFAULT_FILE_STORAGE
+DBBACKUP_STORAGE_OPTIONS = {"location": ROOT_DIR / "dbbackup"}
 # TEMPLATES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates

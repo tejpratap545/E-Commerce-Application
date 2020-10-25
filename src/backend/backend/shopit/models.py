@@ -1,7 +1,7 @@
 # # Create your models here.
 from backend.users.models import Seller, User
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django_better_admin_arrayfield.models.fields import ArrayField
 from djmoney.models.fields import MoneyField
 
 
@@ -116,7 +116,7 @@ class SubCategory(models.Model):
         verbose_name_plural = "SubCategories"
 
 
-class Answer(models.Model):
+class ProductFAQAnswer(models.Model):
     answer = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -128,7 +128,7 @@ class Answer(models.Model):
 
 class ProductFAQ(models.Model):
     question = models.TextField()
-    answer = models.ManyToManyField(Answer)
+    answer = models.ManyToManyField(ProductFAQAnswer)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

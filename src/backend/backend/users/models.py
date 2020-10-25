@@ -2,8 +2,8 @@ from .manager import UserManager
 from backend.utils.fileds import CardExpiryField, CardNumberField, SecurityCodeField
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django_better_admin_arrayfield.models.fields import ArrayField
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
 from typing import Optional

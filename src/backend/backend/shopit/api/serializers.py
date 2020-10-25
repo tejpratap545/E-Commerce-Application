@@ -62,7 +62,7 @@ class AnswerSerializers(serializers.ModelSerializer):
     product_faq_id = serializers.IntegerField(write_only=True)
 
     class Meta:
-        model = Answer
+        model = ProductFAQAnswer
         fields = ["id", "created_by", "created_at", "updated_at", "product_faq_id"]
 
     def create(self, validated_data):
