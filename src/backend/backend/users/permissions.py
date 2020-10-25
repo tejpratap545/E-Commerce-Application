@@ -21,3 +21,13 @@ class IsSeller(permissions.BasePermission):
 class IsOwnerProfile(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.profile_set.get().user.email == request.user.email
+
+
+class IsCreator(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.created_by == request.user.email
+
+
+class IsSellerProduct(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.seller.user.email == request.user.email

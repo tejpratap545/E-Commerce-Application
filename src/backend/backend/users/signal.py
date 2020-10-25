@@ -1,4 +1,4 @@
-from backend.users.models import Profile, User
+from backend.users.models import Profile, Seller, User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -7,6 +7,8 @@ from django.dispatch import receiver
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+        if instance.is_seller:
+            Seller.objects.create(user=instance)
         from libgravatar import md5_hash
 
         instance.md5_hash = md5_hash(instance.email)

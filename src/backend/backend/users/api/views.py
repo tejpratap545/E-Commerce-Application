@@ -21,7 +21,13 @@ from backend.users.permissions import IsOwner, IsOwnerProfile
 from django.db.models import Q
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    GenericAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+)
 from rest_framework.mixins import (
     CreateModelMixin,
     DestroyModelMixin,
@@ -31,31 +37,21 @@ from rest_framework.mixins import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 
-class SignUpUserView(CreateModelMixin, GenericAPIView):
+class SignUpUserView(CreateAPIView):
     serializer_class = UserSignupSerializer
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
 
-
-class UserUpdateView(UpdateModelMixin, GenericAPIView):
+class UserUpdateView(UpdateAPIView):
     serializer_class = UserSignupSerializer
     permission_classes = [IsOwner]
 
     def get_object(self):
         return self.request.user
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
 
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
-
-
-class PasswordChangeView(CreateModelMixin, GenericAPIView):
+class PasswordChangeView(CreateAPIView):
     permission_classes = [IsOwner]
     serializer_class = PasswordChangeSerializer
 
@@ -68,12 +64,13 @@ class PasswordChangeView(CreateModelMixin, GenericAPIView):
                     request.user.set_password(request.data.get("password1"))
                     request.user.save()
                     return Response(
-                        data="Password is successfully change",
+                        data={"msg": "Password is successfully change"},
                         status=status.HTTP_202_ACCEPTED,
                     )
                 except PasswordTooWeakError:
                     return Response(
-                        data="Week Password", status=status.HTTP_400_BAD_REQUEST
+                        data={"msg": "Password is too week"},
+                        status=status.HTTP_400_BAD_REQUEST,
                     )
             return Response(data="Wrong password", status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -84,11 +81,11 @@ def check_email(request):
     email = request.query_params["email"]
     if User.objects.only("email").filter(email=email).exists():
         return Response(
-            data="User with this email is already exits",
+            data={"msg": "User with this email is already exits"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    return Response(data="This email is available", status=status.HTTP_200_OK)
+    return Response(data={"msg": "This email is available"}, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -100,22 +97,22 @@ def check_contact_number(request):
         .exists()
     ):
         return Response(
-            data="User with this contact number is already exits",
+            data={"msg": "User with this contact number is already exits"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    return Response(data="This contact number is available", status=status.HTTP_200_OK)
+    return Response(
+        data={"msg": "This contact number is available"}, status=status.HTTP_200_OK
+    )
 
 
-class ProfileView(RetrieveModelMixin, GenericAPIView):
+class ProfileView(ListAPIView):
 
     permission_classes = [IsOwner]
     serializer_class = UserProfileSerializers
 
-    def get(self, request, format=None):
-        profile = Profile.objects.filter(user=self.request.user)
-        serializer = UserProfileSerializers(profile, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Profile.objects.filter(user=self.request.user)
 
 
 class BillingAddressViewSet(
@@ -155,14 +152,11 @@ class PasswordResetSend(CreateModelMixin, GenericAPIView):
         )
 
 
-class PasswordResetConfirm(CreateModelMixin, GenericAPIView):
+class PasswordResetConfirm(CreateAPIView):
     serializer_class = PasswordResetVerifySerializers
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
 
-
-class PasswordChangeDone(CreateModelMixin, GenericAPIView):
+class PasswordChangeDone(CreateAPIView):
     serializer_class = PasswordResetDoneSerializers
 
     def post(self, request, *args, **kwargs):

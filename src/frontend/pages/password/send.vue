@@ -1,10 +1,10 @@
 <template>
-      <v-row class="justify-center">
+  <v-row class="justify-center">
     <v-col cols="10" md="4">
       <v-card>
         <v-card-title class="">Forgot password</v-card-title>
         <v-card-text class="my-0 py-o">
-            <v-form class="pa-3" lazy-validationm>
+          <v-form class="pa-3" lazy-validationm>
             <v-row class="pa-0 ma-0 justify-center">
               <v-col class="ma-0 pa-0">
                 <v-text-field
@@ -19,10 +19,12 @@
 
             <v-row>
               <v-col>
-                <v-btn block color="success" @click="passowrdLink"> Send Reset link </v-btn>
+                <v-btn block color="success" @click="passowrdLink">
+                  Send Reset link
+                </v-btn>
               </v-col>
             </v-row>
-            </v-form>
+          </v-form>
         </v-card-text>
       </v-card>
     </v-col>
@@ -32,11 +34,14 @@
 <script>
 export default {
   middleware: 'auth-true',
+  data: () => ({
+    username: '',
+  }),
   methods: {
     async passowrdLink() {
-        await this.$axios
+      await this.$axios
         .$post('password/reset/send/', {
-          username: this.email,
+          username: this.username,
         })
         .then((res) => {
           this.$notifier.showMessage({
@@ -50,11 +55,8 @@ export default {
             color: '#f55d42',
           })
         })
-    }
+    },
   },
-  data: () => ({
-      username: '',
-  }),
   head: {
     title: 'Forgot password',
   },

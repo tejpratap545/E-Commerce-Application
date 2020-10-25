@@ -222,8 +222,11 @@ class PasswordResetDoneSerializers(serializers.ModelSerializer):
         raise serializers.ValidationError("Not valid token ")
 
     def create(self, validated_data):
-        user = PasswordReset.objects.get(id=validated_data["token_id"]).user
+        user = User.objects.get(
+            Q(passwordreset__success_token=validated_data["success_token"])
+            & Q(passwordreset__id=validated_data["token_id"])
+        )
         user.set_password(validated_data["password2"])
-
+        user.save()
         PasswordReset.objects.get(id=validated_data["token_id"]).delete()
         return True

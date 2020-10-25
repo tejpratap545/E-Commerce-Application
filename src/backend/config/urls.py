@@ -18,9 +18,11 @@ from django.conf import settings
 from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
-from rest_framework import permissions
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from rest_framework.schemas import get_schema_view as drf_shema
 
 
@@ -29,41 +31,33 @@ urlpatterns = [
 ]
 
 
-
-schema_view = get_schema_view(
-    openapi.Info(
-        title="The E-Commerce-Web-Application API",
-        default_version="v1",
-        description="api for -Commerce-Web-Application application build with django and django rest framework",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@shopit.com"),
-        license=openapi.License(name="BSD License"),
-    ),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
-)
-
 urlpatterns += [
     path(
-        "swagger(?P<format>\.json|\.yaml)$",
-        schema_view.without_ui(cache_timeout=0),
-        name="schema-json",
+        "",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
     ),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    # Optional UI:
     path(
-        "swagger/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
+        "swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
     ),
-    path("", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 ]
 
 
 # users authentication
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 urlpatterns += [
     # authentication and token generators views
     path("api/", include("config.api_routers")),
     path("api/", include("config.api_urls")),
+    path(
+        "favicon.ico", RedirectView.as_view(url=staticfiles_storage.url("shopit.png"))
+    ),
 ]
 if settings.DEBUG:
     import debug_toolbar

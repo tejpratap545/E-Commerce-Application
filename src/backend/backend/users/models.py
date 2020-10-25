@@ -2,6 +2,7 @@ from .manager import UserManager
 from backend.utils.fileds import CardExpiryField, CardNumberField, SecurityCodeField
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
@@ -134,3 +135,16 @@ class PasswordReset(models.Model):
 
     def __str__(self):
         return self.user.email
+
+
+class Seller(models.Model):
+    name = models.CharField(max_length=120, blank=False, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    seller_address = models.ForeignKey(
+        ShippingAddress, on_delete=models.SET_NULL, null=True
+    )
+    billing_address = models.ManyToManyField(BillingAddress)
+    tags = ArrayField(models.TextField())
+
+    def __str__(self):
+        return self.name

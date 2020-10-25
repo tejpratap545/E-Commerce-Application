@@ -91,3 +91,20 @@ class SocialAuthentication(BaseAuthentication):
         Bearer is the only finalized type currently
         """
         return 'Bearer backend realm="%s"' % self.www_authenticate_realm
+
+
+from drf_spectacular.extensions import OpenApiAuthenticationExtension
+
+
+class TokenScheme(OpenApiAuthenticationExtension):
+    target_class = "backend.utils.authentication.SocialAuthentication"
+    name = "oauth2Auth"
+    match_subclasses = True
+    priority = 1
+
+    def get_security_definition(self, auto_schema):
+        return {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "password access_token",
+        }

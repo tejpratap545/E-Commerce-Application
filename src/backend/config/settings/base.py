@@ -5,6 +5,7 @@ Base settings to build other settings files upon.
 from decimal import ROUND_HALF_EVEN
 from moneyed.localization import _FORMATTER
 from pathlib import Path
+from typing import Any, Dict
 
 import environ
 import moneyed
@@ -68,14 +69,15 @@ THIRD_PARTY_APPS = [
     "oauth2_provider",
     "social_django",
     "rest_framework_social_oauth2",
-    "drf_yasg",
     "djmoney",
     "djmoney.contrib.exchange",
+    "dbbackup",
+    "drf_spectacular",
 ]
 
 LOCAL_APPS = [
     "backend.users.apps.UsersConfig",
-    "backend.products.apps.ProductsConfig",
+    "backend.shopit.apps.ProductsConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -86,27 +88,10 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "django.contrib.auth.backends.ModelBackend",
-    "social_core.backends.facebook.FacebookAppOAuth2",
-    "social_core.backends.facebook.FacebookOAuth2",
-    "social_core.backends.google.GoogleOAuth2",
 ]
 MIN_PASSWORD_LENGTH = 6
 PASSWORD_MIN_GUESSES = 1000
-# Facebook configuration
-SOCIAL_AUTH_FACEBOOK_KEY = env("SOCIAL_AUTH_FACEBOOK_KEY", default="")
-SOCIAL_AUTH_FACEBOOK_SECRET = env("SOCIAL_AUTH_FACEBOOK_KEY", default="")
-SOCIAL_AUTH_FACEBOOK_SCOPE = ["email"]
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {"fields": "id, name, email"}
 
-# Google configuration
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default="")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", default="")
-
-# Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
@@ -241,7 +226,8 @@ STATIC_LOCATION = "static"
 MEDIA_LOCATION = "media"
 
 MEDIA_ROOT = str(APPS_DIR / "media")
-
+# STATIC_ROOT = str(APPS_DIR / "static")
+STATICFILES_DIRS = [str(APPS_DIR / "static")]
 # azure storage
 
 AZURE_ACCOUNT_NAME = env("AZURE_ACCOUNT_NAME", default="")
@@ -281,10 +267,8 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
-                "django.template.context_processors.i18n",
                 "django.template.context_processors.media",
                 "django.template.context_processors.static",
-                "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
@@ -360,14 +344,12 @@ CHANNEL_LAYERS = {  # https://pypi.org/project/channels-rabbitmq/#Usage
     },
 }
 
+
 # -------------------------------------------------------------------------------
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "backend.utils.authentication.SocialAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [],
     "DEFAULT_RENDERER_CLASSES": [
@@ -380,7 +362,45 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.MultiPartParser",
         "rest_framework.parsers.FileUploadParser",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+SPECTACULAR_SETTINGS = {
+    "SCHEMA_PATH_PREFIX": r"api",
+    # available SwaggerUI configuration parameters
+    # https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "persistAuthorization": True,
+        "displayOperationId": True,
+        "filter": True,
+        "defaultModelsExpandDepth": 5,
+        "defaultModelExpandDepth": 5,
+    },
+    # General schema metadata. Refer to spec for valid inputs
+    # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#openapi-object
+    "TITLE": "shopIt API",
+    "DESCRIPTION": "Api for an E Commerce Web Application build with django and  django rest framework",
+    # Optional: MAY contain "name", "url", "email"
+    "CONTACT": {"name": "ShoIt developers", "email": "tejpratapsingh545@outlook.com"},
+    # Optional: MUST contain "name", MAY contain URL
+    "LICENSE": {
+        "name": "MIT",
+        "url": "https://github.com/tejpratap545/E-Commerce-Application/blob/main/LICENSE",
+    },
+    "VERSION": "1.0.0",
+    # available SwaggerUI versions: https://github.com/swagger-api/swagger-ui/releases
+    "SWAGGER_UI_DIST": "//unpkg.com/swagger-ui-dist@3.36.0",  # default
+    "SWAGGER_UI_FAVICON_HREF": STATIC_URL + "shopit.png",  # default is swagger favicon
+    # Oauth2 related settings. used for example by django-oauth2-toolkit.
+    # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#oauth-flows-object
+    "OAUTH2_FLOWS": [],
+    "OAUTH2_AUTHORIZATION_URL": None,
+    "OAUTH2_TOKEN_URL": "http://127.0.0.1:8000/api/auth/token/",
+    "OAUTH2_REFRESH_URL": "http://127.0.0.1:8000/api/auth/token/",
+    "OAUTH2_SCOPES": None,
+}
+
 
 # django money
 # https://github.com/django-money/django-money#adding-a-new-currency
