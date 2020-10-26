@@ -45,7 +45,29 @@
           </v-btn>
         </template>
 
-        <v-list v-if="!$auth.loggedIn" class="account-menu">
+        <v-list v-if="$auth.loggedIn" class="account-menu">
+          <v-list-item>
+            <NLink to="/profile">
+              <v-list-item-title>My Profile</v-list-item-title>
+            </NLink>
+          </v-list-item>
+          
+          <v-list-item v_if="$auth.user.user.is_seller">
+            <NLink to="/profile/seller">
+              <v-list-item-title>My Products</v-list-item-title>
+            </NLink>
+          </v-list-item>
+
+          <v-divider></v-divider>
+      
+          <v-list-item>
+            <NLink to="/">
+              <v-list-item-title @click="logout">Sign Out</v-list-item-title>
+            </NLink>
+          </v-list-item>
+        </v-list>
+
+        <v-list v-else class="account-menu">
           <v-list-item>
             <NLink to="/signin">
               <v-list-item-title>Sign In</v-list-item-title>
@@ -58,18 +80,6 @@
           </v-list-item>
         </v-list>
 
-        <v-list v-else class="account-menu">
-          <v-list-item>
-            <NLink to="/profile">
-              <v-list-item-title>My Profile</v-list-item-title>
-            </NLink>
-          </v-list-item>
-          <v-list-item>
-            <NLink to="/">
-              <v-list-item-title @click="logout">Sign Out</v-list-item-title>
-            </NLink>
-          </v-list-item>
-        </v-list>
       </v-menu>
     </v-app-bar>
   </div>
