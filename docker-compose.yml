@@ -1,0 +1,62 @@
+version: '3'
+
+volumes:
+  rabbitmqmain:
+  rabbitmqdata:
+  rabbitmqlogs:
+  pgdata:
+
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    volumes:
+      - rabbitmqmain:/etc/rabbitmq/
+      - rabbitmqdata:/var/lib/rabbitmq/
+      - rabbitmqlogs:/var/log/rabbitmq/
+    environment:
+      RABBITMQ_DEFAULT_USER: shopit
+      RABBITMQ_DEFAULT_PASS: shopit
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: shopit
+      POSTGRES_DB: shopitdb
+      POSTGRES_USER: shopit
+    ports:
+      - 5432:5432
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - 8025:8025
+      - 1025:1025
+
+  django:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    image: shopit_django_local_image
+    container_name: django
+    depends_on:
+      - postgres
+      - mailhog
+      - rabbitmq
+    volumes:
+      - ./src/backend:/app
+    env_file:
+      - ./src/backend/.env
+    ports:
+      - 8000:8000
+      - 5555:5555
+    command: /start
+

@@ -1,0 +1,8 @@
+#production dependencies
+# ------------------------------------------------------------------------------
+
+sentry-sdk==0.19.1 #https://docs.sentry.io/platforms/python/
+django-redis==4.12.1  #https://github.com/jazzband/django-redis
+redis==3.5.3 #https://redis.io/topics/quickstart
+daphne==2.5.0 #https://github.com/django/daphne
+Twisted[tls,http2]
