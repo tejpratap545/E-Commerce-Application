@@ -66,13 +66,14 @@ export default async function ({ $axios, $auth, $config, $store }) {
                 .then((resp) => {
                     $auth.setUser(resp.data[0])
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.log(err)
                     logout($auth, $axios)
 
-                    $store.commit('snackbar/showMessage', {
-                        content: `Your session has been expired . Please sign in again`,
-                        color: 'info',
-                    })
+                    // $store.commit('snackbar/showMessage', {
+                    //     content: `Your session has been expired . Please sign in again`,
+                    //     color: 'info',
+                    // })
                 })
         }
         setInterval(async function () {
