@@ -24,5 +24,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/src/backend/celerybeat-schedule.db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="shopitdb@3.236.220.227" uuid="51766ac4-9c90-47f0-8fec-1acfc97b70ae">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://3.236.220.227:5432/shopitdb</jdbc-url>
+    </data-source>
   </component>
 </project>

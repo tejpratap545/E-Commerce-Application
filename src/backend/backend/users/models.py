@@ -52,7 +52,7 @@ class PasswordTooWeakError(Exception):
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.BigAutoField(primary_key=True, auto_created=True, unique=True)
 
-    email = models.EmailField(max_length=30, blank=False, null=False, unique=True)
+    email = models.EmailField(blank=False, null=False, unique=True)
     contact_number = PhoneNumberField(blank=True, null=True)
     first_name = models.CharField(max_length=50, blank=True, null=True)
     last_name = models.CharField(max_length=50, blank=True, null=True)

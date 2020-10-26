@@ -6,7 +6,7 @@ from djmoney.models.fields import MoneyField
 
 
 class Brand(models.Model):
-    name = models.CharField(max_length=30, blank=False, null=False)
+    name = models.CharField(max_length=100, blank=False, null=False)
     image = models.ImageField(upload_to="brand/image", blank=True, null=True)
     tags = ArrayField(models.TextField(), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -17,14 +17,14 @@ class Brand(models.Model):
 
 
 class FilterValues(models.Model):
-    value = models.CharField(max_length=50)
+    value = models.CharField(max_length=100)
 
     def __str__(self):
         return self.value
 
 
 class FilterProperties(models.Model):
-    name = models.CharField(max_length=30, blank=False, null=False)
+    name = models.CharField(max_length=100, blank=False, null=False)
     value = models.ManyToManyField(FilterValues, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -34,7 +34,7 @@ class FilterProperties(models.Model):
 
 
 class FilterCategory(models.Model):
-    name = models.CharField(max_length=50, blank=False, null=False)
+    name = models.CharField(max_length=100, blank=False, null=False)
     properties = models.ManyToManyField(FilterProperties, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -63,7 +63,7 @@ class MiddlePriceRange(models.Model):
 
 
 class PriceFilterCategory(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=100)
     under_price = MoneyField(max_digits=14, decimal_places=2, default_currency="INR")
     middle_price = MoneyField(max_digits=14, decimal_places=2, default_currency="INR")
     above_price = MoneyField(max_digits=14, decimal_places=2, default_currency="INR")
@@ -79,7 +79,7 @@ class PriceFilterCategory(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=20, blank=False, null=False)
+    name = models.CharField(max_length=100, blank=False, null=False)
 
     brand = models.ManyToManyField(
         Brand, related_name="brand", related_query_name="brand", blank=True
@@ -97,7 +97,7 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
     price_filter_category = models.ManyToManyField(PriceFilterCategory, blank=True)
     filter_category = models.ManyToManyField(FilterCategory, blank=True)
     category = models.ManyToManyField(Category)
