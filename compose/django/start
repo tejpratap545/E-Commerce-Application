@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -o errexit
-set -o pipefail
-set -o nounset
-export DJANGO_SETTINGS_MODULE=config.settings.production
-python manage.py migrate
-daphne -e ssl:8000:privateKey=key.pem:certKey=crt.pem config.asgi:django_application

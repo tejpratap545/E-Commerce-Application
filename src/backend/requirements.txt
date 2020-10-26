@@ -1,3 +1,0 @@
-# these requirements file is only for production purpose for devlopement purpose use the root project location file
--r requirements/common.txt
--r requirements/production.txt
