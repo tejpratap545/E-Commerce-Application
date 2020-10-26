@@ -123,7 +123,7 @@ class ProductFAQAnswer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user
+        return self.created_by.email
 
 
 class ProductFAQ(models.Model):
@@ -134,7 +134,7 @@ class ProductFAQ(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.created_at
+        return self.created_by.email
 
 
 class CommentOnReview(models.Model):
@@ -144,7 +144,7 @@ class CommentOnReview(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.created_by
+        return self.created_by.email
 
 
 class Report(models.Model):
@@ -160,7 +160,7 @@ class Report(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.created_by
+        return self.created_by.email
 
 
 class ProductReview(models.Model):
@@ -174,7 +174,7 @@ class ProductReview(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user
+        return self.is_verified_purchase
 
 
 class ProductInfo(models.Model):
@@ -216,4 +216,4 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.info
+        return self.info.created_at
