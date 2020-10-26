@@ -138,13 +138,13 @@ class PasswordReset(models.Model):
 
 
 class Seller(models.Model):
-    name = models.CharField(max_length=120, blank=False, null=False)
+    name = models.CharField(max_length=120, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     seller_address = models.ForeignKey(
         ShippingAddress, on_delete=models.SET_NULL, null=True
     )
     billing_address = models.ManyToManyField(BillingAddress)
-    tags = ArrayField(models.TextField(), null=True)
+    tags = ArrayField(models.TextField(), null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.user.email
