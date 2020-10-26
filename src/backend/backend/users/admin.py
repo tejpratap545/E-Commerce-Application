@@ -1,8 +1,22 @@
 from .forms import UserAdminChangeForm, UserAdminCreationForm
-from .models import Profile, User
+from .models import (
+    BillingAddress,
+    EmailConfirmation,
+    PasswordReset,
+    Profile,
+    Seller,
+    ShippingAddress,
+    User,
+)
+
 # Register your models here.
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.db.models import JSONField
+from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
+from django_better_admin_arrayfield.forms.fields import DynamicArrayField
+from django_better_admin_arrayfield.forms.widgets import DynamicArrayTextareaWidget
+from jsoneditor.forms import JSONEditor
 
 
 class UserAdmin(BaseUserAdmin):
@@ -51,3 +65,20 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Profile)
+
+
+class CustomAdmin(admin.ModelAdmin, DynamicArrayMixin):
+    formfield_overrides = {
+        JSONField: {"widget": JSONEditor},
+    }
+
+
+@admin.register(Seller)
+class SellerAdmin(CustomAdmin):
+    pass
+
+
+admin.site.register(BillingAddress)
+admin.site.register(ShippingAddress)
+admin.site.register(EmailConfirmation)
+admin.site.register(PasswordReset)

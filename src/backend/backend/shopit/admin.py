@@ -73,3 +73,8 @@ class ProductReviewAdmin(CustomAdmin):
 @admin.register(ProductInfo)
 class ProductInfoAdmin(CustomAdmin):
     pass
+
+
+@admin.register(PriceFilterCategory)
+class PriceFilterCategoryAdmin(CustomAdmin):
+    pass

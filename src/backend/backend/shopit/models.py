@@ -8,12 +8,12 @@ from djmoney.models.fields import MoneyField
 class Brand(models.Model):
     name = models.CharField(max_length=30, blank=False, null=False)
     image = models.ImageField(upload_to="brand/image", blank=True, null=True)
-    tags = ArrayField(models.TextField())
+    tags = ArrayField(models.TextField(), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return f"brand {self.name}"
 
 
 class FilterValues(models.Model):
@@ -25,7 +25,7 @@ class FilterValues(models.Model):
 
 class FilterProperties(models.Model):
     name = models.CharField(max_length=30, blank=False, null=False)
-    value = models.ManyToManyField(FilterValues)
+    value = models.ManyToManyField(FilterValues, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -35,9 +35,7 @@ class FilterProperties(models.Model):
 
 class FilterCategory(models.Model):
     name = models.CharField(max_length=50, blank=False, null=False)
-    properties = models.ManyToManyField(
-        FilterProperties,
-    )
+    properties = models.ManyToManyField(FilterProperties, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -84,9 +82,9 @@ class Category(models.Model):
     name = models.CharField(max_length=20, blank=False, null=False)
 
     brand = models.ManyToManyField(
-        Brand, related_name="brand", related_query_name="brand"
+        Brand, related_name="brand", related_query_name="brand", blank=True
     )
-    tags = ArrayField(models.TextField())
+    tags = ArrayField(models.TextField(), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -100,12 +98,8 @@ class Category(models.Model):
 
 class SubCategory(models.Model):
     name = models.CharField(max_length=20)
-    price_filter_category = models.ManyToManyField(
-        PriceFilterCategory,
-    )
-    filter_category = models.ManyToManyField(
-        FilterCategory,
-    )
+    price_filter_category = models.ManyToManyField(PriceFilterCategory, blank=True)
+    filter_category = models.ManyToManyField(FilterCategory, blank=True)
     category = models.ManyToManyField(Category)
 
     def __str__(self):
@@ -123,18 +117,18 @@ class ProductFAQAnswer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user
+        return self.created_by.email
 
 
 class ProductFAQ(models.Model):
     question = models.TextField()
-    answer = models.ManyToManyField(ProductFAQAnswer)
+    answer = models.ManyToManyField(ProductFAQAnswer, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.created_at
+        return self.created_by.email
 
 
 class CommentOnReview(models.Model):
@@ -144,7 +138,7 @@ class CommentOnReview(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.created_by
+        return f"{self.created_by.email} date {self.created_at}"
 
 
 class Report(models.Model):
@@ -160,49 +154,49 @@ class Report(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.created_by
+        return f"{self.created_by.email} critical : {self.is_critical}"
 
 
 class ProductReview(models.Model):
     rating = models.SmallIntegerField()
-    user = models.ManyToManyField(User)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     description = models.TextField()
-    comments = models.ManyToManyField(CommentOnReview)
+    comments = models.ManyToManyField(CommentOnReview, blank=True)
     is_verified_purchase = models.BooleanField(default=False)
-    report = models.ManyToManyField(Report)
+    report = models.ManyToManyField(Report, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user
+        return f"rating: {self.rating} : report: {self.report}"
 
 
 class ProductInfo(models.Model):
     name = models.CharField(max_length=500, blank=False, null=False)
-    image = models.ImageField(
-        upload_to="product/image",
-    )
+    image = models.ImageField(upload_to="product/image", blank=True, null=True)
     is_available = models.BooleanField(default=True)
     stoke = models.IntegerField(default=1)
     description = models.TextField()
-    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    sub_category = models.ManyToManyField(SubCategory)
+    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    sub_category = models.ManyToManyField(SubCategory, blank=True)
     seller = models.ManyToManyField(Seller)
 
-    tags = ArrayField(models.TextField())
-    faq = models.ManyToManyField(ProductFAQ)
-    review = models.ManyToManyField(ProductReview)
+    tags = ArrayField(models.TextField(), null=True)
+    faq = models.ManyToManyField(ProductFAQ, blank=True)
+    review = models.ManyToManyField(ProductReview, blank=True)
     product_detail = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return f"name:{self.name} brand:{self.brand} stoke:{self.stoke}"
 
 
 class Product(models.Model):
-    media = ArrayField(models.URLField(), null=True)
+    media = ArrayField(models.URLField(), null=True, blank=True)
 
     info = models.ForeignKey(ProductInfo, on_delete=models.CASCADE)
     purchase_option = models.JSONField()
@@ -216,4 +210,4 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.info
+        return f"name {self.info.name} current price : {self.current_price}"
