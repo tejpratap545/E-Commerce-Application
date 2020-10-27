@@ -17,6 +17,7 @@ django-exchange==0.7.4 #https://pypi.org/project/django-exchange/
 django_better_admin_arrayfield==1.4.0 #https://github.com/gradam/django-better-admin-arrayfield
 django-jsoneditor==0.1.6 #https://github.com/nnseva/django-jsoneditor
 django-environ==0.4.5  #https://github.com/joke2k/django-environ
+django-crispy-forms==1.9.2
 
 # rest-api
 django-filter==2.4.0 #https://github.com/carltongibson/django-filter
