@@ -59,11 +59,20 @@
         </v-list>
 
         <v-list v-else class="account-menu">
+          <v-list-item v-if="$auth.user.user.is_seller">
+            <NLink to="/profile/seller">
+              <v-list-item-title>My Products</v-list-item-title>
+            </NLink>
+          </v-list-item>
+
           <v-list-item>
             <NLink to="/profile">
               <v-list-item-title>My Profile</v-list-item-title>
             </NLink>
           </v-list-item>
+
+          <v-divider></v-divider>
+
           <v-list-item>
             <NLink to="/">
               <v-list-item-title @click="logout">Sign Out</v-list-item-title>
