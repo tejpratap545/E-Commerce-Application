@@ -172,7 +172,23 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class BrandListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = ("name", "image")
+
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ("name",)
+
+
 class SellerProductsListSerializer(serializers.ModelSerializer):
+    category = CategoryListSerializer()
+    brand = BrandListSerializer()
+
+
     class Meta:
         model = ProductInfo
         fields = (
@@ -185,3 +201,4 @@ class SellerProductsListSerializer(serializers.ModelSerializer):
             "is_available",
             "created_at",
         )
+        depth = 1

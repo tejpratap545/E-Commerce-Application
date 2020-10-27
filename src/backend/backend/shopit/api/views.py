@@ -3,6 +3,7 @@ from .serializers import *
 from backend.shopit.models import *
 from drf_spectacular.utils import extend_schema
 from rest_framework import generics, viewsets
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
 
@@ -243,6 +244,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 class SellerProducts(generics.ListAPIView):
     serializer_class = SellerProductsListSerializer
     permission_classes = [IsSeller]
+    pagination_class = PageNumberPagination
+    page_size = 20
 
     def get_queryset(self):
         return ProductInfo.objects.only(
@@ -254,4 +257,4 @@ class SellerProducts(generics.ListAPIView):
             "stoke",
             "is_available",
             "created_at",
-        ).filter(self.request.user)
+        ).filter(seller=Seller.objects.get(user=self.request.user))
