@@ -18,10 +18,13 @@ router.register("brand", BrandViewSet)
 router.register("category", CategoryViewSet)
 router.register("subcategory", SubCategoryViewSet)
 router.register("subcategory/filter", FilterCategoryViewSet)
-router.register("subcategory/filter/value", FilterValuesViewSet)
-router.register("subcategory/filter/properties", FilterPropertiesViewSet)
-router.register("pricefilter", PriceFilterViewSet)
-router.register("middlepricerange", MiddlePriceRangeViewSet)
+router.register("subcategory/properties", FilterPropertiesViewSet)
+
+# show filters for design a product based on various select options aor may be text options
+router.register("filter/text", FilterValuesTextViewSet)
+router.register("filter/select", FilterValuesSelectViewSet)
+router.register("filter/select/options", AvailableFilterSelectOptionsViewSet)
+router.register("filter/price", PriceFilterViewSet)
 # router.register("user/me", UserViewSet)
 
 

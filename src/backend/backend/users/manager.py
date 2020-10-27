@@ -37,9 +37,9 @@ class UserManager(BaseUserManager):
         self, email, contact_number, password=None, *args, **kwargs
     ):
         user = self.create_user(
-            email, contact_number, password, is_customer=True * args, **kwargs
+            email, contact_number, password, is_customer=True, *args, **kwargs
         )
-
+        user.is_seller = False
         user.is_admin = False
         user.is_superuser = False
         user.save(using=self._db)

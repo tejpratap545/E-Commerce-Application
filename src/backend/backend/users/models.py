@@ -13,7 +13,7 @@ import uuid as uuid
 
 
 class AbstractAddress(models.Model):
-    room = models.IntegerField(blank=True, null=True)
+    room = models.CharField(max_length=20, blank=True, null=True)
     address1 = models.TextField(blank=False, null=False)
     address2 = models.TextField(blank=True, null=True)
     city = models.CharField(max_length=50, blank=False, null=False)
@@ -22,7 +22,7 @@ class AbstractAddress(models.Model):
     postal_code = models.CharField(max_length=10, blank=False, null=False)
     contact_number = PhoneNumberField(blank=False, null=False)
     fax = models.CharField(max_length=30, blank=True, null=True)
-    email = models.EmailField(max_length=30, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -32,7 +32,7 @@ class ShippingAddress(AbstractAddress):
     extra_information = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.postal_code
+        return f"city {self.city} : contact_number:{self.contact_number}"
 
 
 class BillingAddress(AbstractAddress):
@@ -42,7 +42,7 @@ class BillingAddress(AbstractAddress):
     security_field = SecurityCodeField()
 
     def __str__(self):
-        return self.card_number
+        return f"city {self.city} card {self.card_number}"
 
 
 class PasswordTooWeakError(Exception):

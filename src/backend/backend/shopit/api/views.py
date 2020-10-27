@@ -2,14 +2,14 @@ from ...users.permissions import IsCreator, IsSeller, IsSellerProduct
 from .serializers import *
 from backend.shopit.models import *
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
 
 class BrandViewSet(viewsets.ModelViewSet):
 
     queryset = Brand.objects.all()
-
+    filter_fields = ("category__id",)
     serializer_class = BrandSerializer
 
     def get_permissions(self):
@@ -22,10 +22,44 @@ class BrandViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
-class FilterValuesViewSet(viewsets.ModelViewSet):
-    queryset = FilterValues.objects.all()
+class FilterValuesTextViewSet(viewsets.ModelViewSet):
+    """
+    This view is for various filter options of products
+    """
 
-    serializer_class = FilterValuesSerializers
+    queryset = FilterValuesText.objects.all()
+
+    serializer_class = FilterValuesTextSerializer
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+
+class AvailableFilterSelectOptionsViewSet(viewsets.ModelViewSet):
+    queryset = FilterValuesText.objects.all()
+
+    serializer_class = AvailableFilterSelectOptionsSerializer
+
+    def get_permissions(self):
+        if self.action == "list" or "retrieve":
+            permission_classes = [AllowAny]
+        elif self.action == "create":
+            permission_classes = [IsSeller | IsAdminUser]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+
+class FilterValuesSelectViewSet(viewsets.ModelViewSet):
+    queryset = FilterValuesSelect.objects.all()
+
+    serializer_class = FilterValuesSelectSerializer
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -54,21 +88,6 @@ class FilterPropertiesViewSet(viewsets.ModelViewSet):
 class FilterCategoryViewSet(viewsets.ModelViewSet):
     serializer_class = FilterCategorySerializer
     queryset = FilterCategory.objects.all()
-
-    def get_permissions(self):
-        if self.action == "list" or "retrieve":
-            permission_classes = [AllowAny]
-        elif self.action == "create":
-            permission_classes = [IsSeller | IsAdminUser]
-        else:
-            permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
-
-
-class MiddlePriceRangeViewSet(viewsets.ModelViewSet):
-    queryset = MiddlePriceRange.objects.all()
-
-    serializer_class = MiddlePriceRangeSerializers
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -112,6 +131,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
+    filter_fields = ("category__id",)
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -218,3 +238,20 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsSellerProduct]
         return [permission() for permission in permission_classes]
+
+
+class SellerProducts(generics.ListAPIView):
+    serializer_class = SellerProductsListSerializer
+    permission_classes = [IsSeller]
+
+    def get_queryset(self):
+        return ProductInfo.objects.only(
+            "id",
+            "name",
+            "category",
+            "brand",
+            "image",
+            "stoke",
+            "is_available",
+            "created_at",
+        ).filter(self.request.user)

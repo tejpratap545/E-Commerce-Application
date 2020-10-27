@@ -9,16 +9,37 @@ from .models import (
     User,
 )
 
-# Register your models here.
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.core.paginator import Paginator
+from django.db import connection, transaction
 from django.db.models import JSONField
+from django.db.utils import OperationalError
+from django.utils.functional import cached_property
 from django_better_admin_arrayfield.admin.mixins import DynamicArrayMixin
-from django_better_admin_arrayfield.forms.fields import DynamicArrayField
-from django_better_admin_arrayfield.forms.widgets import DynamicArrayTextareaWidget
 from jsoneditor.forms import JSONEditor
 
 
+class TimeLimitedPaginator(Paginator):
+    """
+    Paginator that enforces a timeout on the count operation.
+    If the operations times out, a fake bogus value is
+    returned instead.
+    """
+
+    @cached_property
+    def count(self):
+        # We set the timeout in a db transaction to prevent it from
+        # affecting other transactions.
+        with transaction.atomic(), connection.cursor() as cursor:
+            cursor.execute("SET LOCAL statement_timeout TO 200;")
+            try:
+                return super().count
+            except OperationalError:
+                return 9999999999
+
+
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
@@ -26,8 +47,23 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ("email", "is_admin", "is_active", "is_seller", "is_customer")
-    list_filter = ("is_admin", "is_active", "is_seller", "is_customer")
+    list_display = (
+        "email",
+        "contact_number",
+        "is_admin",
+        "is_active",
+        "is_seller",
+        "is_customer",
+        "is_email_verified",
+        "date_joined",
+    )
+    list_filter = (
+        "is_admin",
+        "is_active",
+        "is_seller",
+        "is_customer",
+        "is_email_verified",
+    )
     fieldsets = (
         (None, {"fields": ("email", "contact_number", "password")}),
         (
@@ -36,7 +72,15 @@ class UserAdmin(BaseUserAdmin):
         ),
         (
             "Permissions",
-            {"fields": ("is_admin", "is_seller", "is_customer", "is_active")},
+            {
+                "fields": (
+                    "is_admin",
+                    "is_seller",
+                    "is_customer",
+                    "is_active",
+                    "is_email_verified",
+                )
+            },
         ),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
@@ -59,12 +103,8 @@ class UserAdmin(BaseUserAdmin):
         ),
     )
     search_fields = ("email", "contact_number")
-    ordering = ("email",)
+    ordering = ("email", "date_joined")
     filter_horizontal = ()
-
-
-admin.site.register(User, UserAdmin)
-admin.site.register(Profile)
 
 
 class CustomAdmin(admin.ModelAdmin, DynamicArrayMixin):
@@ -75,10 +115,47 @@ class CustomAdmin(admin.ModelAdmin, DynamicArrayMixin):
 
 @admin.register(Seller)
 class SellerAdmin(CustomAdmin):
+    paginator = TimeLimitedPaginator
+    list_display = ("user",)
+    filter_horizontal = ("billing_address",)
+
+
+@admin.register(Profile)
+class ProfileAdmin(CustomAdmin):
+    paginator = TimeLimitedPaginator
+    list_display = ("user",)
+    filter_horizontal = ("shipping_address", "billing_address")
+
+
+@admin.register(BillingAddress)
+class BillingAddressAdmin(CustomAdmin):
+    list_display = (
+        "email",
+        "contact_number",
+        "card_number",
+        "country",
+    )
+    list_filter = (
+        "city",
+        "country",
+    )
+    search_fields = ("email", "contact_number", "city", "country", "card_number")
+    ordering = ("country", "city")
+
+
+@admin.register(ShippingAddress)
+class ShippingAddressAdmin(CustomAdmin):
+    list_display = ("email", "contact_number", "city", "country", "postal_code")
+    list_filter = ("city", "country", "postal_code")
+    search_fields = ("email", "contact_number", "city", "country", "postal_code")
+    ordering = ("country", "city")
+
+
+@admin.register(EmailConfirmation)
+class EmailConfirmationAdmin(CustomAdmin):
     pass
 
 
-admin.site.register(BillingAddress)
-admin.site.register(ShippingAddress)
-admin.site.register(EmailConfirmation)
-admin.site.register(PasswordReset)
+@admin.register(PasswordReset)
+class PasswordResetAdmin(CustomAdmin):
+    pass

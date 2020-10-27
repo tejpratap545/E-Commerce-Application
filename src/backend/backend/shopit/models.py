@@ -16,16 +16,44 @@ class Brand(models.Model):
         return f"brand {self.name}"
 
 
-class FilterValues(models.Model):
-    value = models.CharField(max_length=100)
+class FilterValuesText(models.Model):
+    name = models.CharField(max_length=100, null=True)
+    min_possible_value = models.CharField(max_length=30, blank=True, null=True)
+    max_possible_value = models.CharField(max_length=30, blank=True, null=True)
 
     def __str__(self):
-        return self.value
+        return self.name
+
+
+FilterPropertyChoices = (
+    ("S", "SELECT"),
+    ("T", "TEXT"),
+)
+
+
+class AvailableFilterSelectOptions(models.Model):
+    name = models.CharField(max_length=100, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class FilterValuesSelect(models.Model):
+    name = models.CharField(max_length=100, blank=True, null=True)
+    available_options = models.ManyToManyField(AvailableFilterSelectOptions, blank=True)
+
+    def __str__(self):
+        return f"{self.name} "
 
 
 class FilterProperties(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
-    value = models.ManyToManyField(FilterValues, blank=True)
+    property_type = models.CharField(
+        max_length=1, choices=FilterPropertyChoices, default="S"
+    )
+
+    filter_values = models.ManyToManyField(FilterValuesText, blank=True)
+    select_values = models.ManyToManyField(FilterValuesSelect, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -47,21 +75,6 @@ class FilterCategory(models.Model):
         verbose_name_plural = "FilterCategories"
 
 
-class MiddlePriceRange(models.Model):
-    name = models.CharField(blank=True, null=True, max_length=20)
-    start_price = MoneyField(max_digits=14, decimal_places=2, default_currency="INR")
-    end_price = MoneyField(max_digits=14, decimal_places=2, default_currency="INR")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "MiddlePriceRange"
-        verbose_name_plural = "MiddlePriceRanges"
-
-
 class PriceFilterCategory(models.Model):
     name = models.CharField(max_length=100)
     under_price = MoneyField(max_digits=14, decimal_places=2, default_currency="INR")
@@ -81,9 +94,7 @@ class PriceFilterCategory(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
 
-    brand = models.ManyToManyField(
-        Brand, related_name="brand", related_query_name="brand", blank=True
-    )
+    brand = models.ManyToManyField(Brand, blank=True)
     tags = ArrayField(models.TextField(), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -182,7 +193,11 @@ class ProductInfo(models.Model):
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )
     sub_category = models.ManyToManyField(SubCategory, blank=True)
-    seller = models.ManyToManyField(Seller)
+    seller = models.ForeignKey(
+        Seller,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
 
     tags = ArrayField(models.TextField(), null=True)
     faq = models.ManyToManyField(ProductFAQ, blank=True)
