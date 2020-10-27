@@ -10,19 +10,15 @@ RUN apt-get update \
   && apt-get install -y libpq-dev \
   # Translations dependencies
   && apt-get install -y gettext \
-
   && apt-get install -y curl wget
-
-
-
 
 # upgrade pip
 RUN pip install --upgrade pip
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./src/backend/requirements /requirements
-RUN pip install -r /requirements/common.txt
-RUN pip install -r /requirements/production.txt
+RUN pip install -r /requirements/common.txt --no-cache
+RUN pip install -r /requirements/production.txt --no-cache
 
 
 
