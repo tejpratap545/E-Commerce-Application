@@ -41,12 +41,12 @@ services:
       - 8025:8025
       - 1025:1025
 
-  django:
+  shoitdjango:
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile
-    image: shopit_django_local_image
-    container_name: django
+    image: shopit_django_image
+    container_name: shopit_django
     depends_on:
       - postgres
       - mailhog
@@ -56,7 +56,20 @@ services:
     env_file:
       - ./src/backend/.env
     ports:
-      - 8000:8000
+      - 8001:8001
       - 5555:5555
     command: /start
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/nginx/Dockerfile
+    image: shopit_nginx_image
+    container_name: shopit_nginx
+    ports:
+      - 80:80
+      - 443:443
+   
+    depends_on:
+      - shoitdjango
 
