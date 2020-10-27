@@ -9,9 +9,21 @@ class BrandSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class FilterValuesSerializers(serializers.ModelSerializer):
+class FilterValuesTextSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FilterValues
+        model = FilterValuesText
+        fields = "__all__"
+
+
+class AvailableFilterSelectOptionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AvailableFilterSelectOptions
+        fields = "__all__"
+
+
+class FilterValuesSelectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FilterValuesSelect
         fields = "__all__"
 
 
@@ -24,12 +36,6 @@ class FilterPropertiesSerializer(serializers.ModelSerializer):
 class FilterCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterCategory
-        fields = "__all__"
-
-
-class MiddlePriceRangeSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = MiddlePriceRange
         fields = "__all__"
 
 
@@ -164,3 +170,18 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
+
+
+class SellerProductsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductInfo
+        fields = (
+            "id",
+            "name",
+            "category",
+            "brand",
+            "image",
+            "stoke",
+            "is_available",
+            "created_at",
+        )

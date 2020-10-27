@@ -7,23 +7,6 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/ecommerceapplication</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="" uuid="c4b1a13a-d8de-4772-994b-3c9ef168a767">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/src/backend/.coverage</jdbc-url>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.31.1/sqlite-jdbc-3.31.1.jar</url>
-        </library>
-      </libraries>
-    </data-source>
-    <data-source source="LOCAL" name="celerybeat-schedule.db" uuid="7fcaea4d-2821-4002-af5e-8f19bc88d173">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/src/backend/celerybeat-schedule.db</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="shopitdb@3.236.220.227" uuid="51766ac4-9c90-47f0-8fec-1acfc97b70ae">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>

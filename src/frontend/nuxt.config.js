@@ -1,6 +1,24 @@
+import path from 'path'
+import fs from 'fs'
 import colors from 'vuetify/es5/util/colors'
-
 export default {
+    server: {
+        host: '0.0.0.0',
+        port: 3030,
+        https: {
+            key: fs.readFileSync(path.resolve(__dirname, 'key.pem')),
+            cert: fs.readFileSync(path.resolve(__dirname, 'crt.pem')),
+        },
+    },
+    render: {
+        // https://nuxtjs.org/api/configuration-render/#http2
+        http2: {
+            pushAssets: (req, res, publicPath, preloadFiles) =>
+                preloadFiles
+                    .filter((f) => f.asType === 'script' && f.file === 'runtime.js')
+                    .map((f) => `<${publicPath}${f.file}>; rel=preload; as=${f.asType}`),
+        },
+    },
     // Global page headers (https://go.nuxtjs.dev/config-head)
     head: {
         titleTemplate: '%s - ShopIt',
@@ -69,9 +87,6 @@ export default {
 
     // Build Configuration (https://go.nuxtjs.dev/config-build)
     build: {},
-    server: {
-        port: 3030,
-    },
 
     // env variable https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config/
     publicRuntimeConfig: {

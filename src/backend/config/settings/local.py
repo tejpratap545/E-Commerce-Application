@@ -12,9 +12,7 @@ SECRET_KEY = env(
     default="se4oze4TB2Q9uhNb6g9y1i0nq9ejrBxasH0Oru4eyp4EkvMf31P402tJrOsY0j4V",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = env.list(
-    "DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost", "0.0.0.0"]
-)
+ALLOWED_HOSTS = ["*"]
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # CACHES
 # ------------------------------------------------------------------------------
@@ -52,3 +50,5 @@ INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
 INSTALLED_APPS += ["django_extensions"]  # noqa F405
+
+CORS_ALLOW_ALL_ORIGINS = True
