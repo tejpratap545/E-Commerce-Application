@@ -33,7 +33,7 @@ djangorestframework==3.12.1  # https://github.com/encode/django-rest-framework
 
 
 #celery
-celery==4.4.7  # pyup: < 5.0  # https://github.com/celery/celery
+celery==5.0.1  # pyup: < 5.0  # https://github.com/celery/celery
 django-celery-beat==2.0.0  # https://github.com/celery/django-celery-beat
 flower==0.9.5  # https://github.com/mher/flower
 
