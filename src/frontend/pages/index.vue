@@ -12,39 +12,38 @@
 
     <div class="text-h4 text-center ma-5">Top products</div>
 
-    <v-container class="products=container" fluid>
+    <v-container class="products-container" fluid>
       <v-row align="center" justify="center">
-        <v-col v-for="card in cards" :key="card.title" :cols="card.flex">
+        <v-col v-for="product in products" :key="product.title" cols="3">
           <v-card>
             <NLink to="/product">
               <v-img
-                :src="card.src"
+                :src="product.src"
                 class="white--text align-end"
                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 height="200px"
               >
-                <v-card-title v-text="card.title"></v-card-title>
+                <v-card-title v-text="product.title"></v-card-title>
               </v-img>
             </NLink>
 
             <v-card-actions>
-              <v-spacer></v-spacer>
-
               <v-btn icon>
                 <v-icon>mdi-heart</v-icon>
               </v-btn>
+              
+              <v-spacer></v-spacer>
 
-              <v-btn icon>
-                <v-icon>mdi-bookmark</v-icon>
-              </v-btn>
-
-              <v-btn icon>
-                <v-icon>mdi-share-variant</v-icon>
+              <v-btn elevation="0">
+                <span style="text-decoration: line-through;" class="mr-2">{{product.original_price}}</span> {{product.current_price}} INR
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
+      <div v-show="loading" class="text-center">
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      </div>
     </v-container>
   </div>
 </template>
@@ -55,41 +54,31 @@ export default {
     model: 0,
     colors: ['orange', 'secondary', 'yellow darken-2', 'red'],
 
-    cards: [
-      {
-        title: 'Pre-fab homes',
-        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
-        flex: 3,
-      },
-      {
-        title: 'Favorite road trips',
-        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-        flex: 3,
-      },
-      {
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        flex: 3,
-      },
-      {
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        flex: 3,
-      },
-      {
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        flex: 3,
-      },
-      {
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        flex: 3,
-      },
-    ],
+    products: [],
+    loading: true,
   }),
   head: {
     title: 'Home',
   },
+  methods: {
+      formatProducts(row) {
+        return {
+          id: row.id,
+          title: (row.name) ?( row.name.length > 50 ? row.name.substr(0, 50) + "..." : row.name ) : '',
+          src: row.media,
+
+          original_price: 0,
+          current_price: 0
+        }
+      },
+  },
+  mounted() {
+    this
+      .$axios.$get('product/info/')
+      .then(response => {
+          this.products = response.map(this.formatProducts)
+          this.loading = false
+      })
+  }
 }
 </script>
