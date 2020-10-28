@@ -62,6 +62,12 @@ export default {
         client_secret: this.$config.djangoClientSecret,
         grant_type: 'password',
       })
+      .catch(err => {
+        this.$notifier.showMessage({
+            content: `Sorry something went wrong please check your login information`,
+            color: 'info',
+        })
+      })
     },
   },
   head: {

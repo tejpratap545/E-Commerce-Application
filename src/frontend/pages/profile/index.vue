@@ -13,17 +13,23 @@
             ></v-img>
 
             <v-card-title
-              >{{ $auth.user.user.first_name }}
-              {{ $auth.user.user.last_name }}
-
-              <v-chip v-if="$auth.user.user.is_admin" style="color: #fff; background: #27d;"
-                >admin</v-chip
               >
-              <v-chip v-else>common</v-chip>
+              <span>
+                {{ $auth.user.user.first_name }}
+                {{ $auth.user.user.last_name }}
+              </span>
+
+              <v-chip class="ml-2" v-if="$auth.user.user.is_admin" style="color: #fff; background: #27d;"
+                >admin</v-chip>
+              
+              <v-chip class="ml-2" v-if="$auth.user.user.is_seller" style="color: #fff; background: #27d;"
+                >seller</v-chip>
+
+              <v-chip class="ml-2" v-else>common</v-chip>
             </v-card-title>
 
             <v-divider></v-divider>
-            <div class="pa-5"><v-btn  rounded elevation="0"> Change Profile </v-btn></div>
+            <div class="pa-5 pl-2"><v-btn elevation="0"> Change Profile </v-btn></div>
           </v-card>
 
           <v-card class="mt-5 mt-5 pa-5" v-if="$auth.user.user.is_email_verified">
@@ -43,15 +49,16 @@
               label="Billing Address"
              :value="$auth.user.user.billing_address"
               ></v-textarea>
-          </v-card>
 
-          <v-card class="mt-5 mt-5 pa-5">
             <v-textarea
               clearable
               clear-icon="mdi-close-circle"
               label="Shiping Address"
              :value="$auth.user.user.shipping_address"
               ></v-textarea>
+            
+            <v-divider></v-divider>
+            <div class="pa-5 pl-2"><v-btn elevation="0"> Save Address</v-btn></div>
           </v-card>
         </v-col>
         <v-col class="col-md-8">

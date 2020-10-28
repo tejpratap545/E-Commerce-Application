@@ -163,7 +163,7 @@ export default {
         })
         .catch((err) => {
           this.$notifier.showMessage({
-            content: `sorry something went wrong Please check your email and contact number `,
+            content: `Sorry something went wrong Please check your email and contact number`,
             color: 'info',
           })
         })

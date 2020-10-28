@@ -1,117 +1,160 @@
 <template>
-    <div>
-        <v-data-table
-            :headers="headers"
-            :items="desserts"
-            :items-per-page="5"
-            class="elevation-1"
-        ></v-data-table>
+  <div>
+    <div style="display: flex; justify-content: space-between">
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn elevation="0" v-bind="attrs" v-on="on"><v-icon>mdi-plus</v-icon></v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span class="headline">Add new product</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+              <v-col cols="12">
+                <v-text-field v-model="product.name" label="Name*" required></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-textarea v-model="product.description" label="Decription*" required ></v-textarea>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-select v-model="product.category" :items="categories"  label="Category*" required></v-select>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-select v-model="product.brand" :items="brands" label="Brand*" required ></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="dialog = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="addProduct"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-btn elevation="0" @click="refreshProducts"><v-icon>mdi-refresh</v-icon></v-btn>
     </div>
+
+    <v-data-table
+      :items="rows"
+      :headers="headers"
+      :loading="loading"
+      loading-text="Loading... Please wait"
+    ></v-data-table>
+  </div>
 </template>
 
 <script>
-  export default {
-        head: {
-            title: 'Seller',
-        },
-        data () {
-      return {
-        headers: [
-          {
-            text: 'Dessert (100g serving)',
-            align: 'start',
-            sortable: false,
-            value: 'name',
-          },
-          { text: 'Calories', value: 'calories' },
-          { text: 'Fat (g)', value: 'fat' },
-          { text: 'Carbs (g)', value: 'carbs' },
-          { text: 'Protein (g)', value: 'protein' },
-          { text: 'Iron (%)', value: 'iron' },
-        ],
-        desserts: [
-          {
-            name: 'Frozen Yogurt',
-            calories: 159,
-            fat: 6.0,
-            carbs: 24,
-            protein: 4.0,
-            iron: '1%',
-          },
-          {
-            name: 'Ice cream sandwich',
-            calories: 237,
-            fat: 9.0,
-            carbs: 37,
-            protein: 4.3,
-            iron: '1%',
-          },
-          {
-            name: 'Eclair',
-            calories: 262,
-            fat: 16.0,
-            carbs: 23,
-            protein: 6.0,
-            iron: '7%',
-          },
-          {
-            name: 'Cupcake',
-            calories: 305,
-            fat: 3.7,
-            carbs: 67,
-            protein: 4.3,
-            iron: '8%',
-          },
-          {
-            name: 'Gingerbread',
-            calories: 356,
-            fat: 16.0,
-            carbs: 49,
-            protein: 3.9,
-            iron: '16%',
-          },
-          {
-            name: 'Jelly bean',
-            calories: 375,
-            fat: 0.0,
-            carbs: 94,
-            protein: 0.0,
-            iron: '0%',
-          },
-          {
-            name: 'Lollipop',
-            calories: 392,
-            fat: 0.2,
-            carbs: 98,
-            protein: 0,
-            iron: '2%',
-          },
-          {
-            name: 'Honeycomb',
-            calories: 408,
-            fat: 3.2,
-            carbs: 87,
-            protein: 6.5,
-            iron: '45%',
-          },
-          {
-            name: 'Donut',
-            calories: 452,
-            fat: 25.0,
-            carbs: 51,
-            protein: 4.9,
-            iron: '22%',
-          },
-          {
-            name: 'KitKat',
-            calories: 518,
-            fat: 26.0,
-            carbs: 65,
-            protein: 7,
-            iron: '6%',
-          },
-        ],
-      }
+export default {
+  data: () => ({
+    headers: [
+        { text: 'Id', value: 'id'},
+        { text: 'Brand', value: 'brand' },
+        { text: 'Name', value: 'name' },
+        { text: 'Category', value: 'category' },
+        { text: 'Stock', value: 'stock' },
+    ],
+    rows: [],
+    loading: true,
+    dialog: false,
+    categories: [],
+    brands: [],
+
+    product: {
+      name: '',
+      description: '',
+      category: '',
+      brand: ''
+    }
+  }),
+
+  methods: {
+    retrieveProducts() {
+      this.loading = true
+      this
+        .$axios.$get('seller/product')
+        .then(response => {
+          this.rows = response.map(this.formatProducts);
+          this.loading = false
+        })
+
+      this
+        .$axios.$get('category')
+        .then(response => {
+          this.categories = response.map(this.formatSingleList)
+        })
+      
+      this
+        .$axios.$get('brand')
+        .then(response => {
+          this.brands = response.map(this.formatSingleList)
+        })
     },
+
+    addProduct() {
+      this.dialog = false
+
+      this
+        .$axios.$post('product/info/', {
+          category: {name: this.product.category},
+          brand: {name: this.product.brand},
+          name: this.product.name,
+          description: this.product.description,
+          product_detail: {
+            property1: null,
+            property2: null,            
+          }
+        })
+        .then(response => {          
+          this.retrieveProducts()
+          this.$notifier.showMessage({
+            content: 'New product successfully added',
+            color: 'success',
+          })
+        })
+        .catch((err) => {
+          this.$notifier.showMessage({
+            content: 'Sorry something went wrong',
+            color: '#f55d42',
+          })
+        })
+    },
+ 
+    refreshProducts() {
+      this.retrieveProducts()
+    },
+
+    formatProducts(row) {
+      return {
+        id: row.id,
+        brand: row.brand.name.length > 50 ? row.brand.name.substr(0, 50) + "..." : row.brand.name,
+        name: row.name.length > 50 ? row.name.substr(0, 50) + "..." : row.name,
+        category: row.category.name,
+        stock: row.stoke
+      };
+    },
+
+    formatSingleList(row) {return row.name},
+  },
+
+  mounted() {
+    this.retrieveProducts()
   }
+}
 </script>
