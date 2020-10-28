@@ -1,4 +1,4 @@
-from backend.shopit.api.views import SellerProducts
+from backend.shopit.api.views import SellerProductsViewSet
 from backend.users.views import TokenView
 from django.urls import re_path
 from django.urls.conf import include, path
@@ -62,5 +62,5 @@ urlpatterns = [
         name="email_confirm_check",
     ),
     # products
-    path("seller/product/", SellerProducts.as_view(), name="get the seller products"),
+    # path("seller/product/", SellerProducts.as_view(), name="get the seller products"),
 ]

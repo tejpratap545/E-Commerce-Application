@@ -5,6 +5,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import generics, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
 
 
 class BrandViewSet(viewsets.ModelViewSet):
@@ -212,8 +213,19 @@ class ReportViewSet(viewsets.ModelViewSet):
 
 class ProductInfoViewSet(viewsets.ModelViewSet):
     queryset = ProductInfo.objects.all()
+    filter_fields = (
+        "brand__id",
+        "category__id",
+        "sub_category__id",
+    )
+    ordering_fields = ["created_at", "updated_at"]
+    search_fields = ["@name", "@brand"]
 
-    serializer_class = ProductInfoSerializers
+    def get_serializer_class(self):
+        if self.action == "list" or "retrieve":
+            return ProductInfoListSerializers
+        else:
+            return ProductInfoSerializers
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -228,6 +240,9 @@ class ProductInfoViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
+    filter_fields = ("info__id",)
+    pagination_class = PageNumberPagination
+    page_size = 20
 
     serializer_class = ProductSerializer
 
@@ -241,11 +256,20 @@ class ProductViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
-class SellerProducts(generics.ListAPIView):
-    serializer_class = SellerProductsListSerializer
+class SellerProductsViewSet(viewsets.ReadOnlyModelViewSet):
+
     permission_classes = [IsSeller]
+    filter_fields = (
+        "brand__id",
+        "category__id",
+        "sub_category__id",
+    )
+    ordering_fields = ["created_at", "updated_at"]
+    search_fields = ["@name", "@brand"]
     pagination_class = PageNumberPagination
     page_size = 20
+
+    serializer_class = SellerProductsListSerializer
 
     def get_queryset(self):
         return ProductInfo.objects.only(
@@ -254,7 +278,5 @@ class SellerProducts(generics.ListAPIView):
             "category",
             "brand",
             "image",
-            "stock",
-            "is_available",
             "created_at",
-        ).filter(seller=Seller.objects.get(user=self.request.user))
+        ).filter(seller=Seller.objects.only("user").get(user=self.request.user))

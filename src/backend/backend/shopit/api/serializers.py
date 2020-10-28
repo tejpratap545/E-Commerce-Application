@@ -149,13 +149,14 @@ class SellerInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seller
-        fields = ["user"]
+        fields = ["id", "user"]
 
 
 class BrandListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = (
+            "id",
             "name",
             "image",
         )
@@ -164,12 +165,13 @@ class BrandListSerializer(serializers.ModelSerializer):
 class CategoryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ("name",)
+        fields = (
+            "id",
+            "name",
+        )
 
 
 class ProductInfoSerializers(serializers.ModelSerializer):
-    category = CategoryListSerializer()
-    brand = BrandListSerializer()
     seller = SellerInfoSerializer(read_only=True)
 
     class Meta:
@@ -178,8 +180,39 @@ class ProductInfoSerializers(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return ProductInfo.objects.create(
-            seller=Seller.objects.filter(user=self.context["request"].user),
+            seller=Seller.objects.get(user=self.context["request"].user),
             **validated_data
+        )
+
+
+class ProductListSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "name",
+            "stock",
+            "original_price",
+            "current_price",
+            "created_at",
+        ]
+
+
+class ProductInfoListSerializers(serializers.ModelSerializer):
+    category = CategoryListSerializer()
+    brand = BrandListSerializer()
+    seller = SellerInfoSerializer(read_only=True)
+    product_set = ProductListSerializers(many=True, read_only=True)
+
+    class Meta:
+        model = ProductInfo
+        fields = (
+            "id",
+            "name",
+            "brand",
+            "category",
+            "seller",
+            "product_set",
         )
 
 
@@ -197,6 +230,9 @@ class ProductSerializer(serializers.ModelSerializer):
 class SellerProductsListSerializer(serializers.ModelSerializer):
     category = CategoryListSerializer()
     brand = BrandListSerializer()
+    product_set = ProductListSerializers(many=True, read_only=True)
+    stock = serializers.ReadOnlyField()
+    is_available = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = ProductInfo
@@ -206,8 +242,9 @@ class SellerProductsListSerializer(serializers.ModelSerializer):
             "category",
             "brand",
             "image",
+            "created_at",
+            "product_set",
             "stock",
             "is_available",
-            "created_at",
         )
         depth = 1

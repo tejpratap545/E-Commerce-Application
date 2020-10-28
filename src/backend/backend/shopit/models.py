@@ -189,39 +189,51 @@ class ProductReview(models.Model):
 
 class ProductInfo(models.Model):
     name = models.CharField(max_length=500, blank=False, null=False)
+    seller = models.ForeignKey(
+        Seller,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
     image = models.ImageField(upload_to="product/image", blank=True, null=True)
-    is_available = models.BooleanField(default=True)
-    stock = models.IntegerField(default=1)
+
     description = models.TextField()
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )
     sub_category = models.ManyToManyField(SubCategory, blank=True)
-    seller = models.ForeignKey(
-        Seller,
-        on_delete=models.SET_NULL,
-        null=True,
-    )
 
     tags = ArrayField(models.TextField(), null=True)
+
     faq = models.ManyToManyField(ProductFAQ, blank=True)
     review = models.ManyToManyField(ProductReview, blank=True)
+
     product_detail = models.JSONField()
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"name:{self.name} brand:{self.brand} stoke:{self.stock}"
 
+    @property
+    def stock(self):
+        return self.product_set.all().count()
+
+    @property
+    def is_available(self):
+        return True if self.stock > 0 else False
+
 
 class Product(models.Model):
     media = ArrayField(models.URLField(), null=True, blank=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     info = models.ForeignKey(ProductInfo, on_delete=models.CASCADE)
+    stock = models.PositiveIntegerField(default=1, blank=True, null=True)
+    popularity = models.SmallIntegerField(default=5, blank=True, null=True)
     purchase_option = models.JSONField()
 
-    filter_details = models.JSONField()
+    product_details = models.JSONField()
 
     original_price = MoneyField(max_digits=14, decimal_places=2, default_currency="INR")
     current_price = MoneyField(max_digits=14, decimal_places=2, default_currency="INR")
@@ -231,3 +243,7 @@ class Product(models.Model):
 
     def __str__(self):
         return f"name {self.info.name} current price : {self.current_price}"
+
+    @property
+    def is_available(self):
+        return True if self.stock > 0 else False

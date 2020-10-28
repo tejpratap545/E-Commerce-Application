@@ -97,7 +97,7 @@ class ProductReviewAdmin(CustomAdmin):
 
 @admin.register(ProductInfo)
 class ProductInfoAdmin(CustomAdmin):
-    list_display = ("name", "is_available", "stock", "seller")
+    list_display = ("name", "stock", "seller")
     list_filter = ["brand", "category", "sub_category", "seller"]
     filter_horizontal = ("faq", "review", "sub_category")
     fieldsets = (
@@ -133,5 +133,13 @@ class ProductInfoAdmin(CustomAdmin):
 
 @admin.register(Product)
 class ProductAdmin(CustomAdmin):
-    list_display = ("name", "info", "original_price", "current_price", "created_at")
+    list_display = (
+        "name",
+        "info",
+        "stock",
+        "original_price",
+        "current_price",
+        "created_at",
+    )
     list_filter = ["info"]
+    search_fields = ["name"]

@@ -9,7 +9,6 @@ if settings.DEBUG:
 else:
     router = SimpleRouter()
 
-
 router.register("address/billing", BillingAddressViewSet)
 router.register("address/shipping", ShippingAddressViewSet)
 
@@ -32,7 +31,6 @@ router.register("filter/price", PriceFilterViewSet)
 router.register("product/info", ProductInfoViewSet)
 router.register("product", ProductViewSet)
 
-
 # reports , comments ,FAQ on product
 
 router.register("product/faq", ProductFAQViewSet)
@@ -40,6 +38,7 @@ router.register("product/faq/answer", AnswerViewSet)
 router.register("product/review", ReportViewSet)
 router.register("product/review/comments", CommentOnReviewViewSet)
 
-
+# seller
+router.register("seller/product", SellerProductsViewSet, basename="languages")
 app_name = "shopit"
 urlpatterns = router.urls
