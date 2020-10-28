@@ -70,13 +70,22 @@ class SubCategoryAdmin(CustomAdmin):
     )
 
 
+@admin.register(ProductFAQAnswer)
+class ProductFAQAnswerAdmin(CustomAdmin):
+    list_display = (
+        "created_by",
+        "created_at",
+    )
+    list_filter = ["created_by"]
+    
 @admin.register(ProductFAQ)
 class ProductFAQAdmin(CustomAdmin):
     list_display = (
         "created_by",
         "created_at",
     )
-    list_filter = ["answer"]
+    filter_horizontal = ["answer"]
+    list_filter = ["created_by"]
 
 
 @admin.register(CommentOnReview)
@@ -108,15 +117,6 @@ class ProductInfoAdmin(CustomAdmin):
         (
             "Product Detail",
             {"fields": ("description", "product_detail")},
-        ),
-        (
-            "availability",
-            {
-                "fields": (
-                    "is_available",
-                    "stock",
-                )
-            },
         ),
         (
             "Product Category",
