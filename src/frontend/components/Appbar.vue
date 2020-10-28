@@ -4,11 +4,13 @@
       <v-card-title>Categories</v-card-title>
 
       <v-list v-for="(item, index) in categories" :key="index" dense>
+        <NLink :to="`/category/${item.title}`">
         <v-list-item link>
           <v-list-item-content>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        </NLink>
       </v-list>
     </v-navigation-drawer>
 
@@ -91,12 +93,7 @@ export default {
   },
   data: () => ({
     drawer: false,
-    categories: [
-      { title: 'Computers' },
-      { title: 'Grocery' },
-      { title: 'Books' },
-      { title: 'Home electronics' },
-    ],
+    categories: [],
   }),
   methods: {
     logout() {
@@ -107,7 +104,17 @@ export default {
         })
       })
     },
+
+    formatSingleList(row) {return {title: row.name}},
   },
+  
+  mounted() {
+    this
+        .$axios.$get('category')
+        .then(response => {
+          this.categories = response.map(this.formatSingleList)
+        })
+  }
 }
 </script>
 

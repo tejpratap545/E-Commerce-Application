@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="display: flex; justify-content: space-between">
+    <div style="display:flex; justify-content:space-between">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <template v-slot:activator="{ on, attrs }">
           <v-btn elevation="0" v-bind="attrs" v-on="on"><v-icon>mdi-plus</v-icon></v-btn>
@@ -30,18 +30,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="dialog = false"
-          >
+          <v-btn color="blue darken-1" text @click="dialog = false">
             Close
           </v-btn>
-          <v-btn
-            color="blue darken-1"
-            text
-            @click="addProduct"
-          >
+          <v-btn color="blue darken-1" text @click="addProduct">
             Save
           </v-btn>
         </v-card-actions>
@@ -79,8 +71,8 @@ export default {
     product: {
       name: '',
       description: '',
-      category: '',
-      brand: ''
+      category: 0,
+      brand: 0
     }
   }),
 
@@ -112,8 +104,8 @@ export default {
 
       this
         .$axios.$post('product/info/', {
-          category: {name: this.product.category},
-          brand: {name: this.product.brand},
+          category: this.product.category,
+          brand: this.product.brand,
           name: this.product.name,
           description: this.product.description,
           product_detail: {
@@ -146,11 +138,16 @@ export default {
         brand: row.brand.name.length > 50 ? row.brand.name.substr(0, 50) + "..." : row.brand.name,
         name: row.name.length > 50 ? row.name.substr(0, 50) + "..." : row.name,
         category: row.category.name,
-        stock: row.stoke
-      };
+        stock: row.stock
+      }
     },
 
-    formatSingleList(row) {return row.name},
+    formatSingleList(row) {
+      return {
+        text: row.name,
+        value: row.id,
+      }
+    },
   },
 
   mounted() {
