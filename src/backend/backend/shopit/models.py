@@ -20,9 +20,10 @@ class FilterValuesText(models.Model):
     name = models.CharField(max_length=100, null=True)
     min_possible_value = models.CharField(max_length=30, blank=True, null=True)
     max_possible_value = models.CharField(max_length=30, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
 
 
 FilterPropertyChoices = (
@@ -33,6 +34,7 @@ FilterPropertyChoices = (
 
 class AvailableFilterSelectOptions(models.Model):
     name = models.CharField(max_length=100, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} "
@@ -41,7 +43,7 @@ class AvailableFilterSelectOptions(models.Model):
 class FilterValuesSelect(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     available_options = models.ManyToManyField(AvailableFilterSelectOptions, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.name} "
 
@@ -112,6 +114,7 @@ class SubCategory(models.Model):
     price_filter_category = models.ManyToManyField(PriceFilterCategory, blank=True)
     filter_category = models.ManyToManyField(FilterCategory, blank=True)
     category = models.ManyToManyField(Category)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} "

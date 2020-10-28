@@ -152,7 +152,24 @@ class SellerInfoSerializer(serializers.ModelSerializer):
         fields = ["user"]
 
 
+class BrandListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Brand
+        fields = (
+            "name",
+            "image",
+        )
+
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ("name",)
+
+
 class ProductInfoSerializers(serializers.ModelSerializer):
+    category = CategoryListSerializer()
+    brand = BrandListSerializer()
     seller = SellerInfoSerializer(read_only=True)
 
     class Meta:
@@ -167,27 +184,19 @@ class ProductInfoSerializers(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    product_info = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Product
         fields = "__all__"
 
-
-class BrandListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Brand
-        fields = ("name", "image")
-
-
-class CategoryListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ("name",)
+    def create(self, validated_data):
+        return Product.objects.create(info=validated_data["product_info"])
 
 
 class SellerProductsListSerializer(serializers.ModelSerializer):
     category = CategoryListSerializer()
     brand = BrandListSerializer()
-
 
     class Meta:
         model = ProductInfo

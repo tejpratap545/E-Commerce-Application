@@ -19,21 +19,26 @@ class BrandAdmin(CustomAdmin):
 
 @admin.register(FilterValuesText)
 class FilterValuesTextAdmin(CustomAdmin):
-    list_display = ("name", "min_possible_value", "max_possible_value")
+    list_display = ("name", "min_possible_value", "max_possible_value", "created_at")
 
 
 @admin.register(AvailableFilterSelectOptions)
 class AvailableFilterSelectOptionsAdmin(CustomAdmin):
-    pass
+    list_display = ("name", "created_at")
 
 
 @admin.register(FilterValuesSelect)
 class FilterValuesSelectAdmin(CustomAdmin):
-    list_display = ("name",)
+    list_display = ("name", "created_at")
+    filter_horizontal = (
+        "available_options",
+
+    )
 
 
 @admin.register(FilterProperties)
 class FilterPropertiesAdmin(CustomAdmin):
+    ist_display = ("name", "created_at")
     filter_horizontal = (
         "filter_values",
         "select_values",
@@ -43,11 +48,15 @@ class FilterPropertiesAdmin(CustomAdmin):
 @admin.register(FilterCategory)
 class FilterCategoryAdmin(CustomAdmin):
     list_display = ("name", "created_at")
+    filter_horizontal = (
+        "properties",
+
+    )
 
 
 @admin.register(PriceFilterCategory)
 class PriceFilterCategoryAdmin(CustomAdmin):
-    pass
+    ist_display = ("name", "created_at", "under_price", "above_price")
 
 
 @admin.register(Category)
@@ -58,10 +67,12 @@ class CategoryAdmin(CustomAdmin):
 
 @admin.register(SubCategory)
 class SubCategoryAdmin(CustomAdmin):
+    list_display = ("name", "created_at")
     filter_horizontal = (
         "price_filter_category",
         "filter_category",
         "category",
+
     )
 
 
