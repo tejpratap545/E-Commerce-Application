@@ -41,7 +41,7 @@ export async function signIn($axios, $auth, store, data) {
         $axios
             .get('/user/me/')
             .then((res) => {
-                $auth.setUser(res.data[0])
+                $auth.setUser(res.data)
             })
             .then((res) => {
                 store.commit('snackbar/showMessage', {
@@ -64,7 +64,7 @@ export default async function ({ $axios, $auth, $config, $store }) {
             await $axios
                 .get('/user/me/')
                 .then((resp) => {
-                    $auth.setUser(resp.data[0])
+                    $auth.setUser(resp.data)
                 })
                 .catch((err) => {
                     console.log(err)
