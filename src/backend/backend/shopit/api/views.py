@@ -1,6 +1,7 @@
 from ...users.permissions import IsCreator, IsSeller, IsSellerProduct
 from .serializers import *
 from backend.shopit.models import *
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import generics, viewsets
 from rest_framework.pagination import PageNumberPagination
@@ -222,7 +223,7 @@ class ProductInfoViewSet(viewsets.ModelViewSet):
     search_fields = ["@name", "@brand"]
 
     def get_serializer_class(self):
-        if self.action == "list" or "retrieve":
+        if self.action == "list":
             return ProductInfoListSerializers
         else:
             return ProductInfoSerializers
@@ -243,8 +244,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_fields = ("info__id",)
     pagination_class = PageNumberPagination
     page_size = 20
-
     serializer_class = ProductSerializer
+
+    def get_serializer_class(self):
+
+        return FullProductSerializer if self.action == "retrieve" else ProductSerializer
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -258,7 +262,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class SellerProductsViewSet(viewsets.ReadOnlyModelViewSet):
 
-    permission_classes = [IsSeller]
+    permission_classes = [IsAuthenticated & IsSeller]
     filter_fields = (
         "brand__id",
         "category__id",
@@ -280,3 +284,17 @@ class SellerProductsViewSet(viewsets.ReadOnlyModelViewSet):
             "image",
             "created_at",
         ).filter(seller=Seller.objects.only("user").get(user=self.request.user))
+
+
+class ViewProductView(generics.RetrieveAPIView):
+    serializer_class = FullProductSerializer
+    lookup_field = "pk"
+    queryset = Product.objects.all()
+
+
+class ViewProductInfoView(generics.RetrieveAPIView):
+    serializer_class = FullProductSerializer
+
+    def get_object(self):
+        obj = Product.objects.filter(info=self.kwargs["pk"])[0]
+        return obj

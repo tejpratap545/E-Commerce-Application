@@ -91,7 +91,7 @@ class ReportAdmin(CustomAdmin):
 
 @admin.register(ProductReview)
 class ProductReviewAdmin(CustomAdmin):
-    list_display = ("user", "rating", "is_verified_purchase", "created_at")
+    list_display = ("created_by", "rating", "is_verified_purchase", "created_at")
     list_filter = ["comments", "report"]
 
 

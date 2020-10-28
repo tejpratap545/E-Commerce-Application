@@ -175,7 +175,7 @@ class Report(models.Model):
 
 class ProductReview(models.Model):
     rating = models.SmallIntegerField()
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     description = models.TextField()
     comments = models.ManyToManyField(CommentOnReview, blank=True)
     is_verified_purchase = models.BooleanField(default=False)
