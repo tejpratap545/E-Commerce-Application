@@ -27,6 +27,7 @@ from rest_framework.generics import (
     ListAPIView,
     RetrieveAPIView,
     UpdateAPIView,
+    get_object_or_404,
 )
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -106,13 +107,13 @@ def check_contact_number(request):
     )
 
 
-class ProfileView(ListAPIView):
+class ProfileView(RetrieveAPIView):
 
     permission_classes = [IsOwner]
     serializer_class = UserProfileSerializers
 
-    def get_queryset(self):
-        return Profile.objects.filter(user=self.request.user)
+    def get_object(self):
+        return get_object_or_404(Profile, user=self.request.user)
 
 
 class BillingAddressViewSet(

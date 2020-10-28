@@ -85,6 +85,7 @@ JSON_EDITOR_CSS = (
 LOCAL_APPS = [
     "backend.users.apps.UsersConfig",
     "backend.shopit.apps.ProductsConfig",
+    "backend.orders.apps.OrdersConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

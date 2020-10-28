@@ -3,6 +3,7 @@ from backend.users.models import User
 from rest_framework import serializers
 
 
+# basic serializers for general  CRUD operations
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
@@ -119,7 +120,9 @@ class CommentOnReviewSerializers(serializers.ModelSerializer):
     def create(self, validated_data):
         return ProductReview.objects.get(
             id=validated_data.pop("product_review_id")
-        ).comments.objects.create(**validated_data)
+        ).comments.objects.create(
+            reated_by=self.context["request"].user, **validated_data
+        )
 
 
 class ReportSerializers(serializers.ModelSerializer):
@@ -248,3 +251,74 @@ class SellerProductsListSerializer(serializers.ModelSerializer):
             "is_available",
         )
         depth = 1
+
+
+# serializers for public products display
+class FAQAnswersDisplaySerializer(serializers.ModelSerializer):
+    created_by = UserInfoSerializers(read_only=True)
+
+    class Meta:
+        model = ProductFAQAnswer
+        fields = "__all__"
+
+
+class FaqDisplaySerializer(serializers.ModelSerializer):
+    created_by = UserInfoSerializers(read_only=True)
+    answer = FAQAnswersDisplaySerializer(read_only=True, many=True)
+
+    class Meta:
+        model = ProductFAQ
+        fields = "__all__"
+
+
+class CommentOnReviewDisplaySerializer(serializers.ModelSerializer):
+    created_by = UserInfoSerializers(read_only=True)
+
+    class Meta:
+        model = ProductFAQAnswer
+        fields = "__all__"
+
+
+class ProductReviewDisplaySerializer(serializers.ModelSerializer):
+    comment = CommentOnReviewDisplaySerializer(read_only=True, many=True)
+    created_by = UserInfoSerializers(read_only=True)
+
+    class Meta:
+        model = ProductReview
+        fields = "__all__"
+
+
+class FullProductInfoSerializer(serializers.ModelSerializer):
+    category = CategoryListSerializer()
+    brand = BrandListSerializer()
+    seller = SellerInfoSerializer(read_only=True)
+    faqs = FaqDisplaySerializer(read_only=True)
+    review = ProductReviewDisplaySerializer(many=True, read_only=True)
+    product_set = ProductSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = ProductInfo
+        fields = (
+            "id",
+            "name",
+            "category",
+            "brand",
+            "image",
+            "seller",
+            "faqs",
+            "review",
+            "created_at",
+            "product_set",
+            "stock",
+            "is_available",
+        )
+
+
+# display full product list with product + info(products, faqs, reviews etc)
+class FullProductSerializer(serializers.ModelSerializer):
+    info = FullProductInfoSerializer(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = "__all__"
+        depth = 10

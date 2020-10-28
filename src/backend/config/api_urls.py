@@ -1,4 +1,4 @@
-from backend.shopit.api.views import SellerProductsViewSet
+from backend.shopit.api.views import SellerProductsViewSet, ViewProductInfoView, ViewProductView
 from backend.users.views import TokenView
 from django.urls import re_path
 from django.urls.conf import include, path
@@ -63,4 +63,15 @@ urlpatterns = [
     ),
     # products
     # path("seller/product/", SellerProducts.as_view(), name="get the seller products"),
+    # views products
+    path(
+        "view/product/<int:pk>/",
+        ViewProductView.as_view(),
+        name="retrieving_whole_product_information",
+    ),
+    path(
+        "view/productinfo/<int:pk>/",
+        ViewProductInfoView.as_view(),
+        name="retrieving_whole_product_information",
+    ),
 ]
