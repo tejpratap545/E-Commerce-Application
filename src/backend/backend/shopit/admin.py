@@ -24,16 +24,13 @@ class FilterValuesTextAdmin(CustomAdmin):
 
 @admin.register(AvailableFilterSelectOptions)
 class AvailableFilterSelectOptionsAdmin(CustomAdmin):
-    list_display = ("name", "created_at")
+    list_display = ("name", "created_at", "value")
 
 
 @admin.register(FilterValuesSelect)
 class FilterValuesSelectAdmin(CustomAdmin):
     list_display = ("name", "created_at")
-    filter_horizontal = (
-        "available_options",
-
-    )
+    filter_horizontal = ("available_options",)
 
 
 @admin.register(FilterProperties)
@@ -48,10 +45,7 @@ class FilterPropertiesAdmin(CustomAdmin):
 @admin.register(FilterCategory)
 class FilterCategoryAdmin(CustomAdmin):
     list_display = ("name", "created_at")
-    filter_horizontal = (
-        "properties",
-
-    )
+    filter_horizontal = ("properties",)
 
 
 @admin.register(PriceFilterCategory)
@@ -63,6 +57,7 @@ class PriceFilterCategoryAdmin(CustomAdmin):
 class CategoryAdmin(CustomAdmin):
     list_display = ("name", "created_at")
     list_filter = ["brand"]
+    filter_horizontal = ("brand",)
 
 
 @admin.register(SubCategory)
@@ -72,7 +67,6 @@ class SubCategoryAdmin(CustomAdmin):
         "price_filter_category",
         "filter_category",
         "category",
-
     )
 
 
@@ -103,7 +97,7 @@ class ProductReviewAdmin(CustomAdmin):
 
 @admin.register(ProductInfo)
 class ProductInfoAdmin(CustomAdmin):
-    list_display = ("name", "is_available", "stoke", "seller")
+    list_display = ("name", "is_available", "stock", "seller")
     list_filter = ["brand", "category", "sub_category", "seller"]
     filter_horizontal = ("faq", "review", "sub_category")
     fieldsets = (
@@ -120,7 +114,7 @@ class ProductInfoAdmin(CustomAdmin):
             {
                 "fields": (
                     "is_available",
-                    "stoke",
+                    "stock",
                 )
             },
         ),
@@ -139,4 +133,5 @@ class ProductInfoAdmin(CustomAdmin):
 
 @admin.register(Product)
 class ProductAdmin(CustomAdmin):
-    list_display = ("info", "original_price", "current_price", "created_at")
+    list_display = ("name", "info", "original_price", "current_price", "created_at")
+    list_filter = ["info"]

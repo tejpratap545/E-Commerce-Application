@@ -34,6 +34,7 @@ FilterPropertyChoices = (
 
 class AvailableFilterSelectOptions(models.Model):
     name = models.CharField(max_length=100, null=True)
+    value = models.CharField(max_length=100, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -44,6 +45,7 @@ class FilterValuesSelect(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     available_options = models.ManyToManyField(AvailableFilterSelectOptions, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f"{self.name} "
 
@@ -189,7 +191,7 @@ class ProductInfo(models.Model):
     name = models.CharField(max_length=500, blank=False, null=False)
     image = models.ImageField(upload_to="product/image", blank=True, null=True)
     is_available = models.BooleanField(default=True)
-    stoke = models.IntegerField(default=1)
+    stock = models.IntegerField(default=1)
     description = models.TextField()
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(
@@ -210,12 +212,12 @@ class ProductInfo(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"name:{self.name} brand:{self.brand} stoke:{self.stoke}"
+        return f"name:{self.name} brand:{self.brand} stoke:{self.stock}"
 
 
 class Product(models.Model):
     media = ArrayField(models.URLField(), null=True, blank=True)
-
+    name = models.CharField(max_length=100, blank=True, null=True)
     info = models.ForeignKey(ProductInfo, on_delete=models.CASCADE)
     purchase_option = models.JSONField()
 

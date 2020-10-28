@@ -206,7 +206,7 @@ class SellerProductsListSerializer(serializers.ModelSerializer):
             "category",
             "brand",
             "image",
-            "stoke",
+            "stock",
             "is_available",
             "created_at",
         )

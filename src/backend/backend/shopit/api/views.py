@@ -254,7 +254,7 @@ class SellerProducts(generics.ListAPIView):
             "category",
             "brand",
             "image",
-            "stoke",
+            "stock",
             "is_available",
             "created_at",
         ).filter(seller=Seller.objects.get(user=self.request.user))
