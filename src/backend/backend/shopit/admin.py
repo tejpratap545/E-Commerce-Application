@@ -56,8 +56,8 @@ class PriceFilterCategoryAdmin(CustomAdmin):
 @admin.register(Category)
 class CategoryAdmin(CustomAdmin):
     list_display = ("name", "created_at")
-    list_filter = ["brand"]
-    filter_horizontal = ("brand",)
+    list_filter = ["brands"]
+    filter_horizontal = ("brands",)
 
 
 @admin.register(SubCategory)
@@ -77,14 +77,15 @@ class ProductFAQAnswerAdmin(CustomAdmin):
         "created_at",
     )
     list_filter = ["created_by"]
-    
+
+
 @admin.register(ProductFAQ)
 class ProductFAQAdmin(CustomAdmin):
     list_display = (
         "created_by",
         "created_at",
     )
-    filter_horizontal = ["answer"]
+    filter_horizontal = ["answers"]
     list_filter = ["created_by"]
 
 
@@ -101,14 +102,14 @@ class ReportAdmin(CustomAdmin):
 @admin.register(ProductReview)
 class ProductReviewAdmin(CustomAdmin):
     list_display = ("created_by", "rating", "is_verified_purchase", "created_at")
-    list_filter = ["comments", "report"]
+    filter_horizontal = ["comments", "reports"]
 
 
 @admin.register(ProductInfo)
 class ProductInfoAdmin(CustomAdmin):
     list_display = ("name", "stock", "seller")
-    list_filter = ["brand", "category", "sub_category", "seller"]
-    filter_horizontal = ("faq", "review", "sub_category")
+    list_filter = ["brand", "category", "sub_categories", "seller"]
+    filter_horizontal = ("faqs", "reviews", "sub_categories")
     fieldsets = (
         (
             "Product",
@@ -121,12 +122,12 @@ class ProductInfoAdmin(CustomAdmin):
         (
             "Product Category",
             {
-                "fields": ("brand", "category", "sub_category", "tags"),
+                "fields": ("brand", "category", "sub_categories", "tags"),
             },
         ),
         (
             "reviews and faqs",
-            {"fields": ("review", "faq")},
+            {"fields": ("reviews", "faqs")},
         ),
     )
 
@@ -143,3 +144,4 @@ class ProductAdmin(CustomAdmin):
     )
     list_filter = ["info"]
     search_fields = ["name"]
+    raw_id_fields = ("info",)

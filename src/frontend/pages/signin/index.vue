@@ -36,7 +36,7 @@
               <v-btn block color="success" @click="logIn"> signin </v-btn>
             </v-row>
           </v-form>
-          
+
           <div class="mt-2">
             <NLink to="/password/send">Forgot your password ?</NLink>
           </div>
@@ -61,11 +61,10 @@ export default {
         client_id: this.$config.djangoClientId,
         client_secret: this.$config.djangoClientSecret,
         grant_type: 'password',
-      })
-      .catch(err => {
+      }).catch((err) => {
         this.$notifier.showMessage({
-            content: `Sorry something went wrong please check your login information`,
-            color: 'info',
+          content: `Sorry something went wrong please check your login information`,
+          color: 'info',
         })
       })
     },

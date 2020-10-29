@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 
 # basic serializers for general  CRUD operations
+# ------------------------------------------------------------------------------
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
@@ -40,7 +41,7 @@ class FilterCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PriceFilterCategorySerializers(serializers.ModelSerializer):
+class PriceFilterCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = PriceFilterCategory
         fields = "__all__"
@@ -52,20 +53,24 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SubCategorySerializers(serializers.ModelSerializer):
+class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = "__all__"
 
 
-class UserInfoSerializers(serializers.ModelSerializer):
+class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "first_name", "last_name", "email"]
 
 
-class AnswerSerializers(serializers.ModelSerializer):
-    created_by = UserInfoSerializers(read_only=True)
+class ProductFAQAnswerSerializer(serializers.ModelSerializer):
+    """
+    serialize product_info faq's questions answer with basic information about the user based on UserInfoSerializers
+    """
+
+    created_by = UserInfoSerializer(read_only=True)
     product_faq_id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -80,16 +85,21 @@ class AnswerSerializers(serializers.ModelSerializer):
         )
 
 
-class ProductFAQSerializers(serializers.ModelSerializer):
-    created_by = UserInfoSerializers(read_only=True)
-    answer = AnswerSerializers(many=True)
+class ProductFAQSerializer(serializers.ModelSerializer):
+    """
+    serialize product_info faq with basic information about the user based on UserInfoSerializers and all answers
+    based on ProductFAQAnswerSerializers
+    """
+
+    answers = ProductFAQAnswerSerializer(many=True)
+    created_by = UserInfoSerializer(read_only=True)
     product_info_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = ProductFAQ
         fields = [
             "id",
-            "answer",
+            "answers",
             "created_by",
             "created_at",
             "updated_at",
@@ -102,9 +112,14 @@ class ProductFAQSerializers(serializers.ModelSerializer):
         ).faq.objects.create(created_by=self.context["request"].user, **validated_data)
 
 
-class CommentOnReviewSerializers(serializers.ModelSerializer):
-    created_by = UserInfoSerializers(read_only=True)
+class CommentOnReviewSerializer(serializers.ModelSerializer):
+    """
+    serialize customers comments on other customer reviews  with basic information about the user based on
+    UserInfoSerializers
+    """
+
     product_review_id = serializers.IntegerField(write_only=True)
+    created_by = UserInfoSerializer(read_only=True)
 
     class Meta:
         model = CommentOnReview
@@ -125,8 +140,17 @@ class CommentOnReviewSerializers(serializers.ModelSerializer):
         )
 
 
-class ReportSerializers(serializers.ModelSerializer):
-    created_by = UserInfoSerializers(read_only=True)
+class ProductReviewSerializer(serializers.ModelSerializer):
+    comments = CommentOnReviewSerializer(read_only=True, many=True)
+    created_by = UserInfoSerializer(read_only=True)
+
+    class Meta:
+        model = ProductReview
+        fields = "__all__"
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    created_by = UserInfoSerializer(read_only=True)
     product_review_id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -147,8 +171,16 @@ class ReportSerializers(serializers.ModelSerializer):
         ).report.create(created_by=self.context["request"].user, **validated_data)
 
 
+# -------------------------------------------------------------------------------------------------------------------
+# some shortcuts serializers for display basic information about the fields
+
+
 class SellerInfoSerializer(serializers.ModelSerializer):
-    user = UserInfoSerializers()
+    """
+    display seller information id and user info (id, name,email)
+    """
+
+    user = UserInfoSerializer()
 
     class Meta:
         model = Seller
@@ -156,6 +188,10 @@ class SellerInfoSerializer(serializers.ModelSerializer):
 
 
 class BrandListSerializer(serializers.ModelSerializer):
+    """
+    serialize brand with id , name, and image
+    """
+
     class Meta:
         model = Brand
         fields = (
@@ -166,15 +202,20 @@ class BrandListSerializer(serializers.ModelSerializer):
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
+    """
+    serialize category with id , name , image
+    """
+
     class Meta:
         model = Category
         fields = (
             "id",
             "name",
+            "image",
         )
 
 
-class ProductInfoSerializers(serializers.ModelSerializer):
+class ProductInfoSerializer(serializers.ModelSerializer):
     seller = SellerInfoSerializer(read_only=True)
 
     class Meta:
@@ -188,7 +229,7 @@ class ProductInfoSerializers(serializers.ModelSerializer):
         )
 
 
-class ProductListSerializers(serializers.ModelSerializer):
+class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
@@ -201,11 +242,17 @@ class ProductListSerializers(serializers.ModelSerializer):
         ]
 
 
-class ProductInfoListSerializers(serializers.ModelSerializer):
+class ProductInfoListSerializer(serializers.ModelSerializer):
     category = CategoryListSerializer()
     brand = BrandListSerializer()
     seller = SellerInfoSerializer(read_only=True)
-    product_set = ProductListSerializers(many=True, read_only=True)
+    product_set = ProductListSerializer(many=True, read_only=True)
+    rating1 = serializers.IntegerField()
+    rating2 = serializers.IntegerField()
+    rating3 = serializers.IntegerField()
+    rating4 = serializers.IntegerField()
+    rating5 = serializers.IntegerField()
+    rating_avg = serializers.IntegerField()
 
     class Meta:
         model = ProductInfo
@@ -216,6 +263,12 @@ class ProductInfoListSerializers(serializers.ModelSerializer):
             "category",
             "seller",
             "product_set",
+            "rating1",
+            "rating2",
+            "rating3",
+            "rating4",
+            "rating5",
+            "rating_avg",
         )
 
 
@@ -231,11 +284,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class SellerProductsListSerializer(serializers.ModelSerializer):
+    """
+    serialize seller products based on the the current active seller in this products list date serialize based on
+    the basic information about the category , based  , stock , and is_available in each product information also
+    contain the product_set which  is reverse relationship of product_info
+    """
+
     category = CategoryListSerializer()
     brand = BrandListSerializer()
-    product_set = ProductListSerializers(many=True, read_only=True)
+    product_set = ProductListSerializer(many=True, read_only=True)
     stock = serializers.ReadOnlyField()
     is_available = serializers.BooleanField(read_only=True)
+    rating1 = serializers.IntegerField()
+    rating2 = serializers.IntegerField()
+    rating3 = serializers.IntegerField()
+    rating4 = serializers.IntegerField()
+    rating5 = serializers.IntegerField()
+    rating_avg = serializers.IntegerField()
 
     class Meta:
         model = ProductInfo
@@ -249,51 +314,22 @@ class SellerProductsListSerializer(serializers.ModelSerializer):
             "product_set",
             "stock",
             "is_available",
+            "rating1",
+            "rating2",
+            "rating3",
+            "rating4",
+            "rating5",
+            "rating_avg",
         )
         depth = 1
-
-
-# serializers for public products display
-class FAQAnswersDisplaySerializer(serializers.ModelSerializer):
-    created_by = UserInfoSerializers(read_only=True)
-
-    class Meta:
-        model = ProductFAQAnswer
-        fields = "__all__"
-
-
-class FaqDisplaySerializer(serializers.ModelSerializer):
-    created_by = UserInfoSerializers(read_only=True)
-    answer = FAQAnswersDisplaySerializer(read_only=True, many=True)
-
-    class Meta:
-        model = ProductFAQ
-        fields = "__all__"
-
-
-class CommentOnReviewDisplaySerializer(serializers.ModelSerializer):
-    created_by = UserInfoSerializers(read_only=True)
-
-    class Meta:
-        model = ProductFAQAnswer
-        fields = "__all__"
-
-
-class ProductReviewDisplaySerializer(serializers.ModelSerializer):
-    comment = CommentOnReviewDisplaySerializer(read_only=True, many=True)
-    created_by = UserInfoSerializers(read_only=True)
-
-    class Meta:
-        model = ProductReview
-        fields = "__all__"
 
 
 class FullProductInfoSerializer(serializers.ModelSerializer):
     category = CategoryListSerializer()
     brand = BrandListSerializer()
     seller = SellerInfoSerializer(read_only=True)
-    faqs = FaqDisplaySerializer(read_only=True)
-    review = ProductReviewDisplaySerializer(many=True, read_only=True)
+    faqs = ProductFAQSerializer(many=True, read_only=True)
+    reviews = ProductReviewSerializer(many=True, read_only=True)
     product_set = ProductSerializer(many=True, read_only=True)
 
     class Meta:
@@ -306,7 +342,7 @@ class FullProductInfoSerializer(serializers.ModelSerializer):
             "image",
             "seller",
             "faqs",
-            "review",
+            "reviews",
             "created_at",
             "product_set",
             "stock",
@@ -314,11 +350,16 @@ class FullProductInfoSerializer(serializers.ModelSerializer):
         )
 
 
-# display full product list with product + info(products, faqs, reviews etc)
+# display full product list with product + info(other purchaseOptions products, faqs, reviews etc)
 class FullProductSerializer(serializers.ModelSerializer):
     info = FullProductInfoSerializer(read_only=True)
+    rating1 = serializers.IntegerField()
+    rating2 = serializers.IntegerField()
+    rating3 = serializers.IntegerField()
+    rating4 = serializers.IntegerField()
+    rating5 = serializers.IntegerField()
+    rating_avg = serializers.IntegerField()
 
     class Meta:
         model = Product
         fields = "__all__"
-        depth = 10

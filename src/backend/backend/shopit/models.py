@@ -97,8 +97,8 @@ class PriceFilterCategory(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
-
-    brand = models.ManyToManyField(Brand, blank=True)
+    image = models.ImageField(upload_to="category/images", blank=True, null=True)
+    brands = models.ManyToManyField(Brand, blank=True)
     tags = ArrayField(models.TextField(), blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -133,18 +133,18 @@ class ProductFAQAnswer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"self.created_by.email"
+        return f"{self.created_by}"
 
 
 class ProductFAQ(models.Model):
     question = models.TextField()
-    answer = models.ManyToManyField(ProductFAQAnswer, blank=True)
+    answers = models.ManyToManyField(ProductFAQAnswer, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"self.created_by.email"
+        return f"{self.created_by}"
 
 
 class CommentOnReview(models.Model):
@@ -154,15 +154,13 @@ class CommentOnReview(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.created_by.email} date {self.created_at}"
+        return f"{self.created_by} date {self.created_at}"
 
 
 class Report(models.Model):
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="user_report",
-        related_query_name="user_reports",
     )
     description = models.TextField()
     is_critical = models.BooleanField(default=False)
@@ -170,7 +168,7 @@ class Report(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.created_by.email} critical : {self.is_critical}"
+        return f"{self.created_by} critical : {self.is_critical}"
 
 
 class ProductReview(models.Model):
@@ -179,12 +177,12 @@ class ProductReview(models.Model):
     description = models.TextField()
     comments = models.ManyToManyField(CommentOnReview, blank=True)
     is_verified_purchase = models.BooleanField(default=False)
-    report = models.ManyToManyField(Report, blank=True)
+    reports = models.ManyToManyField(Report, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"rating: {self.rating} : report: {self.report}"
+        return f"rating: {self.rating} : created_by: {self.created_by}"
 
 
 class ProductInfo(models.Model):
@@ -201,12 +199,12 @@ class ProductInfo(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )
-    sub_category = models.ManyToManyField(SubCategory, blank=True)
+    sub_categories = models.ManyToManyField(SubCategory, blank=True)
 
     tags = ArrayField(models.TextField(), null=True)
 
-    faq = models.ManyToManyField(ProductFAQ, blank=True)
-    review = models.ManyToManyField(ProductReview, blank=True)
+    faqs = models.ManyToManyField(ProductFAQ, blank=True)
+    reviews = models.ManyToManyField(ProductReview, blank=True)
 
     product_detail = models.JSONField()
 

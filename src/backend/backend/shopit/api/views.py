@@ -1,6 +1,7 @@
 from ...users.permissions import IsCreator, IsSeller, IsSellerProduct
 from .serializers import *
 from backend.shopit.models import *
+from django.db.models import Avg, Count, Q
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import generics, viewsets
@@ -105,7 +106,7 @@ class FilterCategoryViewSet(viewsets.ModelViewSet):
 class PriceFilterViewSet(viewsets.ModelViewSet):
     queryset = PriceFilterCategory.objects.all()
 
-    serializer_class = PriceFilterCategorySerializers
+    serializer_class = PriceFilterCategorySerializer
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -145,13 +146,13 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
-    serializer_class = SubCategorySerializers
+    serializer_class = SubCategorySerializer
 
 
 class AnswerViewSet(viewsets.ModelViewSet):
     queryset = ProductFAQAnswer.objects.all()
 
-    serializer_class = AnswerSerializers
+    serializer_class = ProductFAQAnswerSerializer
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -167,7 +168,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
 class ProductFAQViewSet(viewsets.ModelViewSet):
     queryset = ProductFAQ.objects.all()
 
-    serializer_class = ProductFAQSerializers
+    serializer_class = ProductFAQSerializer
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -183,7 +184,7 @@ class ProductFAQViewSet(viewsets.ModelViewSet):
 class CommentOnReviewViewSet(viewsets.ModelViewSet):
     queryset = CommentOnReview.objects.all()
 
-    serializer_class = CommentOnReviewSerializers
+    serializer_class = CommentOnReviewSerializer
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -199,7 +200,7 @@ class CommentOnReviewViewSet(viewsets.ModelViewSet):
 class ReportViewSet(viewsets.ModelViewSet):
     queryset = Report.objects.all()
 
-    serializer_class = ReportSerializers
+    serializer_class = ReportSerializer
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -212,21 +213,44 @@ class ReportViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
 
+# get the product rating information based on product id
+product_rating1 = Count("info__reviews__rating", filter=Q(info__reviews__rating=1))
+product_rating2 = Count("info__reviews__rating", filter=Q(info__reviews__rating=2))
+product_rating3 = Count("info__reviews__rating", filter=Q(info__reviews__rating=3))
+product_rating4 = Count("info__reviews__rating", filter=Q(info__reviews__rating=4))
+product_rating5 = Count("info__reviews__rating", filter=Q(info__reviews__rating=4))
+product_rating_avg = Avg("info__reviews__rating")
+# get the product rating information based on product info id
+product_info_rating1 = Count("reviews__rating", filter=Q(reviews__rating=1))
+product_info__rating2 = Count("reviews__rating", filter=Q(reviews__rating=2))
+product_info__rating3 = Count("reviews__rating", filter=Q(reviews__rating=3))
+product_info__rating4 = Count("reviews__rating", filter=Q(reviews__rating=4))
+product_info__rating5 = Count("reviews__rating", filter=Q(reviews__rating=4))
+product_info__rating_avg = Avg("reviews__rating")
+
+
 class ProductInfoViewSet(viewsets.ModelViewSet):
-    queryset = ProductInfo.objects.all()
+    queryset = ProductInfo.objects.all().annotate(
+        rating1=product_info_rating1,
+        rating2=product_info__rating2,
+        rating3=product_info__rating3,
+        rating4=product_info__rating4,
+        rating5=product_info__rating5,
+        rating_avg=product_info__rating_avg,
+    )
     filter_fields = (
         "brand__id",
         "category__id",
-        "sub_category__id",
+        "sub_categories__id",
     )
     ordering_fields = ["created_at", "updated_at"]
     search_fields = ["@name", "@brand"]
 
     def get_serializer_class(self):
         if self.action == "list":
-            return ProductInfoListSerializers
+            return ProductInfoListSerializer
         else:
-            return ProductInfoSerializers
+            return ProductInfoSerializer
 
     def get_permissions(self):
         if self.action == "list" or "retrieve":
@@ -246,10 +270,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     page_size = 20
     serializer_class = ProductSerializer
 
-    def get_serializer_class(self):
-
-        return FullProductSerializer if self.action == "retrieve" else ProductSerializer
-
     def get_permissions(self):
         if self.action == "list" or "retrieve":
             permission_classes = [AllowAny]
@@ -266,7 +286,7 @@ class SellerProductsViewSet(viewsets.ReadOnlyModelViewSet):
     filter_fields = (
         "brand__id",
         "category__id",
-        "sub_category__id",
+        "sub_categories__id",
     )
     ordering_fields = ["created_at", "updated_at"]
     search_fields = ["@name", "@brand"]
@@ -276,25 +296,50 @@ class SellerProductsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SellerProductsListSerializer
 
     def get_queryset(self):
-        return ProductInfo.objects.only(
-            "id",
-            "name",
-            "category",
-            "brand",
-            "image",
-            "created_at",
-        ).filter(seller=Seller.objects.only("user").get(user=self.request.user))
+        return (
+            ProductInfo.objects.only(
+                "id",
+                "name",
+                "category",
+                "brand",
+                "image",
+                "created_at",
+            )
+            .filter(seller=Seller.objects.only("user").get(user=self.request.user))
+            .annotate(
+                rating1=product_info_rating1,
+                rating2=product_info__rating2,
+                rating3=product_info__rating3,
+                rating4=product_info__rating4,
+                rating5=product_info__rating5,
+                rating_avg=product_info__rating_avg,
+            )
+        )
 
 
 class ViewProductView(generics.RetrieveAPIView):
     serializer_class = FullProductSerializer
     lookup_field = "pk"
-    queryset = Product.objects.all()
+    queryset = Product.objects.annotate(
+        rating1=product_rating1,
+        rating2=product_rating2,
+        rating3=product_rating3,
+        rating4=product_rating4,
+        rating5=product_rating5,
+        rating_avg=product_rating_avg,
+    )
 
 
 class ViewProductInfoView(generics.RetrieveAPIView):
     serializer_class = FullProductSerializer
 
     def get_object(self):
-        obj = Product.objects.filter(info=self.kwargs["pk"])[0]
+        obj = Product.objects.filter(info=self.kwargs["pk"]).annotate(
+            rating1=product_rating1,
+            rating2=product_rating2,
+            rating3=product_rating3,
+            rating4=product_rating4,
+            rating5=product_rating5,
+            rating_avg=product_rating_avg,
+        )[0]
         return obj

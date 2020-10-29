@@ -12,33 +12,45 @@
               rounded
             ></v-img>
 
-            <v-card-title
-              >
+            <v-card-title>
               <span>
                 {{ $auth.user.user.first_name }}
                 {{ $auth.user.user.last_name }}
               </span>
 
-              <v-chip class="ml-2" v-if="$auth.user.user.is_admin" style="color: #fff; background: #27d;"
-                >admin</v-chip>
-              
-              <v-chip class="ml-2" v-if="$auth.user.user.is_seller" style="color: #fff; background: #27d;"
-                >seller</v-chip>
+              <v-chip
+                v-if="$auth.user.user.is_admin"
+                class="ml-2"
+                style="color: #fff; background: #27d"
+                >admin</v-chip
+              >
 
-              <v-chip class="ml-2" v-else>common</v-chip>
+              <v-chip
+                v-if="$auth.user.user.is_seller"
+                class="ml-2"
+                style="color: #fff; background: #27d"
+                >seller</v-chip
+              >
+
+              <v-chip v-else class="ml-2">common</v-chip>
             </v-card-title>
 
             <v-divider></v-divider>
-            <div class="pa-5 pl-2"><v-btn elevation="0"> Change Profile </v-btn></div>
+            <div class="pa-5 pl-2">
+              <v-btn elevation="0"> Change Profile </v-btn>
+            </div>
           </v-card>
 
-          <v-card class="mt-5 mt-5 pa-5" v-if="$auth.user.user.is_email_verified">
+          <v-card
+            v-if="$auth.user.user.is_email_verified"
+            class="mt-5 mt-5 pa-5"
+          >
             <v-card-title> Please verify your email </v-card-title>
 
             <div class="pa-5">
-            <NLink to="/profile">
-              <v-btn color="primary" dark> Resent Verification Email </v-btn>
-            </NLink>
+              <NLink to="/profile">
+                <v-btn color="primary" dark> Resent Verification Email </v-btn>
+              </NLink>
             </div>
           </v-card>
 
@@ -47,18 +59,20 @@
               clearable
               clear-icon="mdi-close-circle"
               label="Billing Address"
-             :value="$auth.user.user.billing_address"
-              ></v-textarea>
+              :value="$auth.user.user.billing_address"
+            ></v-textarea>
 
             <v-textarea
               clearable
               clear-icon="mdi-close-circle"
               label="Shiping Address"
-             :value="$auth.user.user.shipping_address"
-              ></v-textarea>
-            
+              :value="$auth.user.user.shipping_address"
+            ></v-textarea>
+
             <v-divider></v-divider>
-            <div class="pa-5 pl-2"><v-btn elevation="0"> Save Address</v-btn></div>
+            <div class="pa-5 pl-2">
+              <v-btn elevation="0"> Save Address</v-btn>
+            </div>
           </v-card>
         </v-col>
         <v-col class="col-md-8">
@@ -68,8 +82,8 @@
             <v-list></v-list>
             <v-list-item v-for="order in orders" :key="order.title">
               <v-sheet width="100%" class="mt-3 mb-3 pa-2" color="#eee" rounded>
-                <div style="display:flex; justify-content: space-between">
-                  <h4>{{ order.title }}</h4>                
+                <div style="display: flex; justify-content: space-between">
+                  <h4>{{ order.title }}</h4>
                   <p>{{ order.date }}</p>
                 </div>
               </v-sheet>
@@ -96,7 +110,3 @@ export default {
   middleware: 'auth-check',
 }
 </script>
-
-<style>
-
-</style>
