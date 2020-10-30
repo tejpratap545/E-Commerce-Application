@@ -16,7 +16,7 @@
       <v-row align="center" justify="center">
         <v-col v-for="product in products" :key="product.title" cols="3">
           <v-card>
-            <NLink to="/product">
+            <NLink :to="`/product?id=${product.id}`">
               <v-img
                 :src="product.src"
                 class="white--text align-end"
@@ -35,7 +35,7 @@
               <v-spacer></v-spacer>
 
               <v-btn elevation="0">
-                <span style="text-decoration: line-through;" class="mr-2">{{product.original_price}}</span> {{product.current_price}} INR
+                <small>{{product.price_options}}</small>
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -62,13 +62,18 @@ export default {
   },
   methods: {
       formatProducts(row) {
+        var price_options = 'Not available'
+
+        if(row.product_set.length > 0) {
+          price_options = `Starting from ₹ ${row.product_set[0].current_price}`
+        }
+
         return {
           id: row.id,
           title: (row.name) ?( row.name.length > 50 ? row.name.substr(0, 50) + "..." : row.name ) : '',
           src: row.media,
 
-          original_price: 0,
-          current_price: 0
+          price_options: price_options,
         }
       },
   },

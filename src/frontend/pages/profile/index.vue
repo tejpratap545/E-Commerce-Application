@@ -24,8 +24,6 @@
               
               <v-chip class="ml-2" v-if="$auth.user.user.is_seller" style="color: #fff; background: #27d;"
                 >seller</v-chip>
-
-              <v-chip class="ml-2" v-else>common</v-chip>
             </v-card-title>
 
             <v-divider></v-divider>
